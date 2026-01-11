@@ -1,0 +1,237 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Classes">
+      <UniqueIdentifier>{90eca7c8-1a90-4e35-ab34-b46586acc745}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Classes\vc">
+      <UniqueIdentifier>{4144143f-ce92-459a-baa1-1c35afcc7b11}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resource">
+      <UniqueIdentifier>{b4a3b34f-570a-416f-9c85-d57146085d21}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Classes\StdAfx">
+      <UniqueIdentifier>{ca1c04c4-d771-4b97-90c8-1eba3c89dd5e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Classes\Fixture">
+      <UniqueIdentifier>{087fab31-47a4-4636-a427-3312f6379267}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Classes\pxtone">
+      <UniqueIdentifier>{ff851bd1-b344-498a-8c79-bc9cfdf418c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Classes\Streaming">
+      <UniqueIdentifier>{3e7f65dd-ada9-464f-9bd1-3b1e83c025ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Classes\Streaming\DirectX5">
+      <UniqueIdentifier>{365f7416-8ff0-4caa-ba72-401ac4e881dd}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Classes\vc\resource.h">
+      <Filter>Classes\vc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\StdAfx\StdAfx.h">
+      <Filter>Classes\StdAfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\vc\pxtone.h">
+      <Filter>Classes\vc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Fixture\DataDevice.h">
+      <Filter>Classes\Fixture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Fixture\DebugLog.h">
+      <Filter>Classes\Fixture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\pxtone\pxtnPulse_Frequency.h">
+      <Filter>Classes\pxtone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\pxtone\pxtnPulse_Oscillator.h">
+      <Filter>Classes\pxtone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\pxtone\pxtnPulse_Noise.h">
+      <Filter>Classes\pxtone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Streaming\pxMME.h">
+      <Filter>Classes\Streaming</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Streaming\DirectX5\d3dtypes.h">
+      <Filter>Classes\Streaming\DirectX5</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Streaming\DirectX5\dsound.h">
+      <Filter>Classes\Streaming\DirectX5</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Streaming\DxSound.h">
+      <Filter>Classes\Streaming</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Streaming\Streaming.h">
+      <Filter>Classes\Streaming</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Fixture\CriticalSection.h">
+      <Filter>Classes\Fixture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Fixture\pxMem.h">
+      <Filter>Classes\Fixture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\pxtone\pxtnService.h">
+      <Filter>Classes\pxtone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\pxtone\pxtnDelay.h">
+      <Filter>Classes\pxtone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\pxtone\pxtnEvelist.h">
+      <Filter>Classes\pxtone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\pxtone\pxtnOverDrive.h">
+      <Filter>Classes\pxtone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\pxtone\pxtnText.h">
+      <Filter>Classes\pxtone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\pxtone\pxtnUnit.h">
+      <Filter>Classes\pxtone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\pxtone\pxtnWoice.h">
+      <Filter>Classes\pxtone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\pxtone\pxtnPulse_PCM.h">
+      <Filter>Classes\pxtone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\pxtone\pxtnPulse_Oggv.h">
+      <Filter>Classes\pxtone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\pxtone\pxtnMaster.h">
+      <Filter>Classes\pxtone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\pxtone\pxtnError.h">
+      <Filter>Classes\pxtone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\pxtone\pxtnGroup.h">
+      <Filter>Classes\pxtone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Streaming\ActiveTone.h">
+      <Filter>Classes\Streaming</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\pxtone\pxtnIO.h">
+      <Filter>Classes\pxtone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\pxtone\pxStdDef.h">
+      <Filter>Classes\pxtone</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Classes\StdAfx\StdAfx.cpp">
+      <Filter>Classes\StdAfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\vc\MainDLL.cpp">
+      <Filter>Classes\vc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\vc\Main.cpp">
+      <Filter>Classes\vc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\vc\pxtone.cpp">
+      <Filter>Classes\vc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Fixture\DataDevice.cpp">
+      <Filter>Classes\Fixture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Fixture\DebugLog.cpp">
+      <Filter>Classes\Fixture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\pxtone\pxtnPulse_Frequency.cpp">
+      <Filter>Classes\pxtone</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\pxtone\pxtnPulse_Oscillator.cpp">
+      <Filter>Classes\pxtone</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\pxtone\pxtnPulse_Noise.cpp">
+      <Filter>Classes\pxtone</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Streaming\pxMME.cpp">
+      <Filter>Classes\Streaming</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Streaming\DxSound.cpp">
+      <Filter>Classes\Streaming</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Streaming\Streaming.cpp">
+      <Filter>Classes\Streaming</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Fixture\CriticalSection.cpp">
+      <Filter>Classes\Fixture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Fixture\pxMem.cpp">
+      <Filter>Classes\Fixture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\pxtone\pxtnService.cpp">
+      <Filter>Classes\pxtone</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\pxtone\pxtnDelay.cpp">
+      <Filter>Classes\pxtone</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\pxtone\pxtnEvelist.cpp">
+      <Filter>Classes\pxtone</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\pxtone\pxtnOverDrive.cpp">
+      <Filter>Classes\pxtone</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\pxtone\pxtnText.cpp">
+      <Filter>Classes\pxtone</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\pxtone\pxtnUnit.cpp">
+      <Filter>Classes\pxtone</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\pxtone\pxtnWoice.cpp">
+      <Filter>Classes\pxtone</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\pxtone\pxtnPulse_PCM.cpp">
+      <Filter>Classes\pxtone</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\pxtone\pxtnWoicePTV.cpp">
+      <Filter>Classes\pxtone</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\pxtone\pxtnPulse_Oggv.cpp">
+      <Filter>Classes\pxtone</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\pxtone\pxtnMaster.cpp">
+      <Filter>Classes\pxtone</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\pxtone\pxtnError.cpp">
+      <Filter>Classes\pxtone</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\pxtone\pxtnGroup.cpp">
+      <Filter>Classes\pxtone</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\pxtone\pxtnService_moo.cpp">
+      <Filter>Classes\pxtone</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Streaming\ActiveTone.cpp">
+      <Filter>Classes\Streaming</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\pxtone\pxtnIO.cpp">
+      <Filter>Classes\pxtone</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\Classes\vc\script.rc">
+      <Filter>Classes\vc</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\history.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\Classes\vc\icon\pxtone.bmp">
+      <Filter>resource</Filter>
+    </Image>
+    <Image Include="..\Classes\vc\icon\face.ico">
+      <Filter>resource</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="..\Classes\Streaming\DirectX5\dsound.lib">
+      <Filter>Classes\Streaming\DirectX5</Filter>
+    </Library>
+    <Library Include="..\Classes\Streaming\DirectX5\dxguid.lib">
+      <Filter>Classes\Streaming\DirectX5</Filter>
+    </Library>
+  </ItemGroup>
+</Project>

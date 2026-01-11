@@ -1,0 +1,43 @@
+v.0.6.2.0 :
+	関数名 pxtone_Tune_GetLastError() を pxtone_GetLastError() に変更。
+
+v.0.7.1.2 :
+	C ソースに対応。
+
+v.0.7.1.5 : (改名が多くて申しわけない)
+	pxtone_Tune_Read() を追加。
+	pxtone_Tune_Vomit() を追加。
+	pxtone_ResetSampling()  を pxtone_reset() に改名。
+	pxtone_Tune_Play()      を pxtone_Tune_Start() に改名。
+	pxtone_Tune_IsPlaying() を pxtone_Tune_IsStreaming() に改名。
+
+v.0.7.1.6 :
+	pxtone_Release() の後で pxtone_Ready() を呼ぶと落ちるバグを修正。
+	pxtone_Tune_Vomit() 等を修正。
+
+v.-.-.-.- :
+	色々変更はあったと思う..
+
+v.0.9.1.6 :
+	pxtone_Noise_Create() / pxtone_Noise_Create_FromMemory() を追加。
+
+v.0.9.1.7 :
+	pxtone.lib なし。
+
+v.0.9.1.8 :
+	pxtone_Tune_Start() の引数にボリュームを追加。
+
+v.0.9.1.9 :
+	引数の型をいくらか変えました。 BOOL -> bool、long -> int など。
+
+'17/02/05
+	修正 pxtnPulse_NoiseBuilder.cpp と pxtnPulse_Noise.cpp に解放し忘れたメモリ。
+	修正 pxtnPulse_PCM::Copy_() コーディングミス if( !create != pxtnOK )。
+
+'17/04/28
+	pxtnWoice::Tone_Ready_sample()の delete p_pcm しわすれを修正。
+
+'17/10/14
+	pxtnDescriptor を廃止。pxtnDataクラスを追加。
+	pxtnIO_read / pxtnIO_write / pxtnIO_seek / pxtnIO_pos を設定して
+	自由に入出力を行う方式にしました。

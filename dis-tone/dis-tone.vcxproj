@@ -1,0 +1,258 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="DLL_Debug|Win32">
+      <Configuration>DLL_Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="DLL_Release|Win32">
+      <Configuration>DLL_Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{9E34CCAC-D41F-4933-A0EA-BAF18F1637E0}</ProjectGuid>
+    <RootNamespace>RockfishWin</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>pxtone</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DLL_Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DLL_Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DLL_Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DLL_Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IntDir>$(SolutionDir)$(Configuration)\$(TargetName)\</IntDir>
+    <ExternalIncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</ExternalIncludePath>
+    <TargetExt>.exe</TargetExt>
+    <IncludePath>$(SolutionDir)Classes\StdAfx;$(SolutionDir)libogg\include;$(SolutionDir)libvorbis\include;</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DLL_Debug|Win32'">
+    <IntDir>$(SolutionDir)$(Configuration)\$(TargetName)\</IntDir>
+    <ExternalIncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</ExternalIncludePath>
+    <TargetExt>.dll</TargetExt>
+    <EmbedManifest>true</EmbedManifest>
+    <IncludePath>$(SolutionDir)Classes\StdAfx;$(SolutionDir)libogg\include;$(SolutionDir)libvorbis\include;</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IntDir>$(SolutionDir)$(Configuration)\$(TargetName)\</IntDir>
+    <IncludePath>$(SolutionDir)Classes\StdAfx;$(SolutionDir)libogg\include;$(SolutionDir)libvorbis\include;</IncludePath>
+    <ExternalIncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</ExternalIncludePath>
+    <EmbedManifest>false</EmbedManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DLL_Release|Win32'">
+    <IntDir>$(SolutionDir)$(Configuration)\$(TargetName)\</IntDir>
+    <IncludePath>$(SolutionDir)Classes\StdAfx;$(SolutionDir)libogg\include;$(SolutionDir)libvorbis\include;</IncludePath>
+    <ExternalIncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</ExternalIncludePath>
+    <TargetExt>.dll</TargetExt>
+    <EmbedManifest>false</EmbedManifest>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ForcedIncludeFiles>
+      </ForcedIncludeFiles>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>$(SolutionDir)ogg.lib;$(SolutionDir)libvorbis.lib;$(SolutionDir)libvorbisfile.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DLL_Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PreprocessorDefinitions>_WINDLL;DLL_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>$(SolutionDir)ogg.lib;$(SolutionDir)libvorbis.lib;$(SolutionDir)libvorbisfile.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <Manifest>
+      <OutputManifestFile />
+    </Manifest>
+    <ManifestResourceCompile>
+      <ResourceOutputFileName />
+    </ManifestResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>$(SolutionDir)ogg.lib;$(SolutionDir)libvorbis.lib;$(SolutionDir)libvorbisfile.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DLL_Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PreprocessorDefinitions>_WINDLL;DLL_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>$(SolutionDir)ogg.lib;$(SolutionDir)libvorbis.lib;$(SolutionDir)libvorbisfile.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Classes\Fixture\CriticalSection.h" />
+    <ClInclude Include="..\Classes\Fixture\DataDevice.h" />
+    <ClInclude Include="..\Classes\Fixture\DebugLog.h" />
+    <ClInclude Include="..\Classes\Fixture\pxMem.h" />
+    <ClInclude Include="..\Classes\pxtone\pxStdDef.h" />
+    <ClInclude Include="..\Classes\pxtone\pxtnDelay.h" />
+    <ClInclude Include="..\Classes\pxtone\pxtnError.h" />
+    <ClInclude Include="..\Classes\pxtone\pxtnEvelist.h" />
+    <ClInclude Include="..\Classes\pxtone\pxtnGroup.h" />
+    <ClInclude Include="..\Classes\pxtone\pxtnIO.h" />
+    <ClInclude Include="..\Classes\pxtone\pxtnMaster.h" />
+    <ClInclude Include="..\Classes\pxtone\pxtnOverDrive.h" />
+    <ClInclude Include="..\Classes\pxtone\pxtnPulse_Frequency.h" />
+    <ClInclude Include="..\Classes\pxtone\pxtnPulse_Noise.h" />
+    <ClInclude Include="..\Classes\pxtone\pxtnPulse_Oggv.h" />
+    <ClInclude Include="..\Classes\pxtone\pxtnPulse_Oscillator.h" />
+    <ClInclude Include="..\Classes\pxtone\pxtnPulse_PCM.h" />
+    <ClInclude Include="..\Classes\pxtone\pxtnService.h" />
+    <ClInclude Include="..\Classes\pxtone\pxtnText.h" />
+    <ClInclude Include="..\Classes\pxtone\pxtnUnit.h" />
+    <ClInclude Include="..\Classes\pxtone\pxtnWoice.h" />
+    <ClInclude Include="..\Classes\StdAfx\StdAfx.h" />
+    <ClInclude Include="..\Classes\Streaming\DirectX5\d3dtypes.h" />
+    <ClInclude Include="..\Classes\Streaming\DirectX5\dsound.h" />
+    <ClInclude Include="..\Classes\Streaming\DxSound.h" />
+    <ClInclude Include="..\Classes\Streaming\pxMME.h" />
+    <ClInclude Include="..\Classes\Streaming\ActiveTone.h" />
+    <ClInclude Include="..\Classes\Streaming\Streaming.h" />
+    <ClInclude Include="..\Classes\vc\pxtone.h" />
+    <ClInclude Include="..\Classes\vc\resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Classes\Fixture\CriticalSection.cpp" />
+    <ClCompile Include="..\Classes\Fixture\DataDevice.cpp" />
+    <ClCompile Include="..\Classes\Fixture\DebugLog.cpp" />
+    <ClCompile Include="..\Classes\Fixture\pxMem.cpp" />
+    <ClCompile Include="..\Classes\pxtone\pxtnDelay.cpp" />
+    <ClCompile Include="..\Classes\pxtone\pxtnError.cpp" />
+    <ClCompile Include="..\Classes\pxtone\pxtnEvelist.cpp" />
+    <ClCompile Include="..\Classes\pxtone\pxtnGroup.cpp" />
+    <ClCompile Include="..\Classes\pxtone\pxtnIO.cpp" />
+    <ClCompile Include="..\Classes\pxtone\pxtnMaster.cpp" />
+    <ClCompile Include="..\Classes\pxtone\pxtnOverDrive.cpp" />
+    <ClCompile Include="..\Classes\pxtone\pxtnPulse_Frequency.cpp" />
+    <ClCompile Include="..\Classes\pxtone\pxtnPulse_Noise.cpp" />
+    <ClCompile Include="..\Classes\pxtone\pxtnPulse_Oggv.cpp" />
+    <ClCompile Include="..\Classes\pxtone\pxtnPulse_Oscillator.cpp" />
+    <ClCompile Include="..\Classes\pxtone\pxtnPulse_PCM.cpp" />
+    <ClCompile Include="..\Classes\pxtone\pxtnService.cpp" />
+    <ClCompile Include="..\Classes\pxtone\pxtnService_moo.cpp" />
+    <ClCompile Include="..\Classes\pxtone\pxtnText.cpp" />
+    <ClCompile Include="..\Classes\pxtone\pxtnUnit.cpp" />
+    <ClCompile Include="..\Classes\pxtone\pxtnWoice.cpp" />
+    <ClCompile Include="..\Classes\pxtone\pxtnWoicePTV.cpp" />
+    <ClCompile Include="..\Classes\StdAfx\StdAfx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DLL_Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DLL_Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Streaming\DxSound.cpp" />
+    <ClCompile Include="..\Classes\Streaming\pxMME.cpp" />
+    <ClCompile Include="..\Classes\Streaming\ActiveTone.cpp" />
+    <ClCompile Include="..\Classes\Streaming\Streaming.cpp" />
+    <ClCompile Include="..\Classes\vc\Main.cpp" />
+    <ClCompile Include="..\Classes\vc\MainDLL.cpp" />
+    <ClCompile Include="..\Classes\vc\pxtone.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\Classes\vc\script.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\history.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\Classes\vc\icon\face.ico" />
+    <Image Include="..\Classes\vc\icon\pxtone.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="..\Classes\Streaming\DirectX5\dsound.lib" />
+    <Library Include="..\Classes\Streaming\DirectX5\dxguid.lib" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
