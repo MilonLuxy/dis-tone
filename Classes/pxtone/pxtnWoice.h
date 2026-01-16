@@ -129,7 +129,7 @@ void          pxtnWoice_Voice_Init    ( ptvUNIT *p_vc, VOICETYPE type );
 s32           pxtnWoice_Add           ( void );
 s32           pxtnWoice_Read          ( const char *path, b32 pbNew, WOICE_STRUCT *p_voice );
 s32           pxtnWoice_Duplicate     ( const WOICE_STRUCT *p_voice );
-void          pxtnWoice_BuildPTV      (       WOICE_STRUCT *p_voice );
+void          pxtnWoice_BuildPTV      (       WOICE_STRUCT *p_voice, s32 smp_size, s32 ch_num, s32 sps, s32 bps );
 b32           pxtnWoice_Tone_Ready    ( s32 index );
 s32           pxtnWoice_Count         ( void );
 b32           pxtnWoice_ReadyTone     ( void );

@@ -283,7 +283,7 @@ static b32 _Tone_ReadyEnvelope( WOICE_STRUCT *p_voice )
 	s32      e       =    0 ;
 	pxPOINT *p_point = NULL ;
 
-	s32 sps; Streaming_Get_SampleInfo( NULL, (long*)&sps, NULL );
+	s32 sps; Streaming_Get_SampleInfo( NULL, (s32*)&sps, NULL );
 
 	for( s32 v = 0; v < p_voice->_voice_num; v++ )
 	{
@@ -553,7 +553,7 @@ End:
 	return index;
 }
 
-void pxtnWoice_BuildPTV( WOICE_STRUCT *p_voice )
+void pxtnWoice_BuildPTV( WOICE_STRUCT *p_voice, s32 smp_size, s32 ch_num, s32 sps, s32 bps )
 {
 	for( s32 v = 0; v < p_voice->_voice_num; v++ )
 	{
@@ -562,10 +562,10 @@ void pxtnWoice_BuildPTV( WOICE_STRUCT *p_voice )
 
 		if( p_vc->type == VOICETYPE_Overtone || p_vc->type == VOICETYPE_Coodinate )
 		{
-			p_vi->smp_body_w = _DEFAULT_SMP_SIZE;
-			s32 size = p_vi->smp_body_w * _DEFAULT_CHANNEL_NUM * _DEFAULT_BPS;
-			memset( p_vi->p_smp_w, 0, size / 8 );
-			_UpdateWavePTV( p_vc, p_vi, _DEFAULT_CHANNEL_NUM, _DEFAULT_SPS, _DEFAULT_BPS );
+			p_vi->smp_body_w = smp_size;
+			s32 size = p_vi->smp_body_w * ch_num * bps / 8;
+			if( !pxMem_zero_alloc( (void**)&p_vi->p_smp_w, size ) ) return;
+			_UpdateWavePTV( p_vc, p_vi, ch_num, sps, bps );
 		}
 	}
 }

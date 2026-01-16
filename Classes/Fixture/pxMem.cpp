@@ -19,28 +19,9 @@ void pxMem_zero( void *p, long byte_size )
 	for( long i = 0; i < byte_size; i++, p_++ ) *p_ = 0;
 }
 
-void pxMem_cap( long   *val_l, long   max_l, long   min_l )
-{
-	if( *val_l > max_l ) *val_l = max_l;
-	if( *val_l < min_l ) *val_l = min_l;
-}
-void pxMem_cap( char   *val_c, char   max_c, char   min_c )
-{
-	if( *val_c > max_c ) *val_c = max_c;
-	if( *val_c < min_c ) *val_c = min_c;
-}
-void pxMem_cap( short  *val_s, short  max_s, short  min_s )
-{
-	if( *val_s > max_s ) *val_s = max_s;
-	if( *val_s < min_s ) *val_s = min_s;
-}
-void pxMem_cap( float  *val_f, float  max_f, float  min_f )
-{
-	if( *val_f > max_f ) *val_f = max_f;
-	if( *val_f < min_f ) *val_f = min_f;
-}
-void pxMem_cap( double *val_d, double max_d, double min_d )
-{
-	if( *val_d > max_d ) *val_d = max_d;
-	if( *val_d < min_d ) *val_d = min_d;
-}
+void pxMem_cap( long   *val, long   max, long   min ){ *val = ( *val > max ? max : *val < min ? min : *val ); }
+void pxMem_cap( double *val, double max, double min ){ *val = ( *val > max ? max : *val < min ? min : *val ); }
+void pxMem_cap( char   *val, char   max, char   min ){ long   l = *val; pxMem_cap( &l, (long  )max, (long  )min ); *val = (char )l; }
+void pxMem_cap( short  *val, short  max, short  min ){ long   l = *val; pxMem_cap( &l, (long  )max, (long  )min ); *val = (short)l; }
+void pxMem_cap( int    *val, int    max, int    min ){ long   l = *val; pxMem_cap( &l, (long  )max, (long  )min ); *val = (int  )l; }
+void pxMem_cap( float  *val, float  max, float  min ){ double d = *val; pxMem_cap( &d, (double)max, (double)min ); *val = (float)d; }

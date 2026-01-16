@@ -171,6 +171,10 @@ long ddv_Variable_Write( long value, FILE *fp, long *p_add )
 
 	return FALSE;
 }
+int ddv_Variable_Write( int value, FILE *fp, int *p_add )
+{
+	return ddv_Variable_Write( (long)value, fp, (long*)p_add );
+}
 
 
 // ‰Â•Ï’·“Ç‚Ýž‚Ýiunsigned long ‚Ü‚Å‚ð•ÛØj
@@ -246,6 +250,15 @@ BOOL ddv_Variable_Read( char  *p, DDV *p_read )
 	if( !ddv_Variable_Read( &l, p_read ) ) return FALSE;
 	if( l >= 0x80 ) return FALSE;
 	*p = (char)l;
+	return TRUE;
+}
+
+BOOL ddv_Variable_Read( int   *p, DDV *p_read )
+{
+	long l;
+	if( !ddv_Variable_Read( &l, p_read ) ) return FALSE;
+	if( l >= 0x80000000 ) return FALSE;
+	*p = (int)l;
 	return TRUE;
 }
 

@@ -374,7 +374,7 @@ End:
 
 void ActiveTone_Voice_Sampling( void *p1, long size )
 {
-	return;
+	return; // this function was somehow corrupting 8-bit streaming playback
 	if( !_CS_Lock() ) return;
 
 	long offset;

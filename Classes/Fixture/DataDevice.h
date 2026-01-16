@@ -23,10 +23,12 @@ void ddv_Close( DDV *p_read );
 
 long ddv_Variable_CheckSize( long value );
 long ddv_Variable_Write(         long value, FILE *fp, long *p_add );
+int  ddv_Variable_Write(         int  value, FILE *fp, int  *p_add );
 BOOL ddv_Variable_Read(          long  *p, DDV *p_read );
 BOOL ddv_Variable_Read(          short *p, DDV *p_read );
 BOOL ddv_Variable_Read(          char  *p, DDV *p_read );
 BOOL ddv_Variable_Read( unsigned short *p, DDV *p_read );
+BOOL ddv_Variable_Read(          int   *p, DDV *p_read );
 
 
 bool ddv_String_Write( const char* str, unsigned char buf_size, FILE *fp     );

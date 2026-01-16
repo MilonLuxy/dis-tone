@@ -4,6 +4,8 @@
 #define pxINCLUDE_OGGVORBIS 1
 // $(SolutionDir)libogg\include;$(SolutionDir)libvorbis\include;
 
+#define pxINCLUDE_PT4i      1
+
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>

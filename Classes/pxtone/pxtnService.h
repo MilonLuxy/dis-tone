@@ -20,6 +20,7 @@ void pxtnService_Clear          ( void );
 b32  pxtnService_Write          ( const char *path, b32 b_tune  );
 s32  pxtnService_Pre_Count_Event( DDV *p_read,      s32 p_count );
 b32  pxtnService_Read           ( DDV *p_read,      b32 b_tune  );
+b32  pxtnService_CheckPTIFormat ( b8  *b_pti,       DDV *p_read, const char *path );
 
 // pxtnServiceMoo -------------------------------
 b32  pxtnServiceMoo_Is_Finished       ( void  );

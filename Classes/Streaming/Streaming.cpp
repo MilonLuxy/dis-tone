@@ -3,12 +3,14 @@
 
 #include "../Fixture/DebugLog.h"
 #include "../Fixture/pxMem.h"
+#include "../pxtone/pxtnService.h"
+#include "../PT4i/PT4i.h"
+#include "../PT4i/pxSound.h"
+#include "../vc/pxtone.h"
 #include "DxSound.h"
 #include "pxMME.h"
-#include "Streaming.h"
 #include "ActiveTone.h"
-#include "../vc/pxtone.h"
-#include "../pxtone/pxtnService.h"
+#include "Streaming.h"
 
 
 static enum STREAM_PROC
@@ -31,6 +33,7 @@ typedef struct STREAM_CONFIG
 };
 
 static BOOL _b_init    = FALSE;
+static BOOL _b_pti     = FALSE;
 static CRITICAL_SECTION _cs_proc;
 static STREAM_PROC      _proc_state;
 static STREAM_CONFIG    _strm_current;
@@ -59,6 +62,9 @@ BOOL Streaming_Release( void )
 {
 	dlog( "streaming release(1)" );
 	if( !_b_init ) return TRUE;
+#ifdef pxINCLUDE_PT4i
+	pxSound_Release();
+#endif
 	_b_init = FALSE;
 
 	dlog( "streaming release(2)" );
@@ -110,6 +116,16 @@ BOOL Streaming_Initialize( DWORD *strm_cfg, long size )
 				pxMME_Proc ) ) goto End;
 	}
 
+#ifdef pxINCLUDE_PT4i
+	if( !PT4i_Initialize(
+		_strm_current.hWnd,
+		_strm_current.channel_num,
+		_strm_current.sps,
+		_strm_current.bps,
+		_strm_current.smp_per_buf,
+		_strm_current.bDirectSound ) ) goto End;
+#endif
+
 	_b_init  = TRUE;
 End:
 	if( !_b_init ) Streaming_Release();
@@ -117,11 +133,26 @@ End:
 	return _b_init;
 }
 
-BOOL Streaming_Tune_Start( const void *p_prep )
+BOOL Streaming_Tune_Start( const void *p_prep, BOOL b_pti )
 {
-	dlog( "Streaming_Tune_Start();" );
 	if( _proc_state != _PROC_STOPPED ) return FALSE;
+
+	dlog( "Streaming_Tune_Start();" );
+
+#ifdef pxINCLUDE_PT4i
+	if( b_pti )
+	{
+		if( !PT4i_Start() ) return FALSE;
+	}
+	else
+	{
+		if( !pxtnServiceMoo_Preparation( (pxtnVOMITPREPARATION*)p_prep ) ) return FALSE;
+	}
+	_b_pti = b_pti;
+#else
 	if( !pxtnServiceMoo_Preparation( (pxtnVOMITPREPARATION*)p_prep ) ) return FALSE;
+#endif
+
 	_proc_state = _PROC_PLAYING;
 	return TRUE;
 }
@@ -131,13 +162,25 @@ void Streaming_Tune_Stop( void )
 	{
 		_proc_state = _PROC_PAUSED;
 		pxtnServiceMoo_Release();
+#ifdef pxINCLUDE_PT4i
+		PT4i_Stop();
+#endif
 		_proc_state = _PROC_STOPPED;
 	}
 }
-void Streaming_Tune_Fadeout( long msec ){ if( _proc_state == _PROC_PLAYING ) pxtnServiceMoo_SetFade( -1, msec ); }
-BOOL Streaming_Is          ( void      ){ return ( _proc_state == _PROC_PLAYING || _proc_state == _PROC_PAUSED ); }
+void Streaming_Tune_Fadeout( int msec )
+{
+	if( _proc_state == _PROC_PLAYING )
+	{
+#ifdef pxINCLUDE_PT4i
+		if( _b_pti ) PT4i_SetFade(  msec );
+#endif
+		pxtnServiceMoo_SetFade( -1, msec );
+	}
+}
+BOOL Streaming_Is( void ){ return ( _proc_state == _PROC_PLAYING || _proc_state == _PROC_PAUSED ); }
 
-void Streaming_GetQuality( long *p_ch_num, long *p_sps, long *p_bps, long *p_smp_buf )
+void Streaming_GetQuality( s32 *p_ch_num, s32 *p_sps, s32 *p_bps, s32 *p_smp_buf )
 {
 	if( _b_init )
 	{
@@ -154,13 +197,13 @@ void Streaming_GetQuality( long *p_ch_num, long *p_sps, long *p_bps, long *p_smp
 		if( p_smp_buf ) *p_smp_buf = 0;
 	}
 }
-void Streaming_Set_SampleInfo( long    ch_num, long    sps, long    bps )
+void Streaming_Set_SampleInfo( s32    ch_num, s32    sps, s32    bps )
 {
 	_ch_num = ch_num;
 	_sps    = sps   ;
 	_bps    = bps   ;
 }
-void Streaming_Get_SampleInfo( long *p_ch_num, long *p_sps, long *p_bps )
+void Streaming_Get_SampleInfo( s32 *p_ch_num, s32 *p_sps, s32 *p_bps )
 {
 	if( p_ch_num ) *p_ch_num = _ch_num;
 	if( p_sps    ) *p_sps    = _sps   ;
@@ -168,6 +211,28 @@ void Streaming_Get_SampleInfo( long *p_ch_num, long *p_sps, long *p_bps )
 }
 
 
+
+
+
+
+/////////////////////////////
+// 再生の処理
+/////////////////////////////
+
+// PTI playback
+#ifdef pxINCLUDE_PT4i
+void _PTI_Proc( void )
+{
+	if( !PT4i_Procedure() ) Streaming_Tune_Stop();
+	
+	if( _strm_current.callback )
+	{
+		long clock = PT4i_Get_NowEve();
+		_strm_current.callback_old = (PXTONEPLAY_CALLBACK)_strm_current.callback;
+		_strm_current.callback_old( clock, PT4i_IsFinised() );
+	}
+}
+#endif
 
 // Direct Sound
 BOOL DxSound_Proc( void *arg )
@@ -177,6 +242,11 @@ BOOL DxSound_Proc( void *arg )
 
 	while( (index = WaitForMultipleObjects( hThread->count, hThread->events, FALSE, INFINITE )) < DS_BUFFER_COUNT - 1 )
 	{
+
+#ifdef pxINCLUDE_PT4i
+		if( _b_pti ){ _PTI_Proc(); if( !pxSound_IsActive() ) break; }
+#endif
+
 		DWORD  buf_index = (index + 1) % (DS_BUFFER_COUNT - 1);
 		DWORD  dwbuf1, dwbuf2;
 		LPVOID lpbuf1, lpbuf2;
@@ -203,7 +273,7 @@ BOOL DxSound_Proc( void *arg )
 			_CS_Unlock();
 		}
 
-		if( _strm_current.callback )
+		if( _strm_current.callback && !_b_pti )
 		{
 			long clock = pxtnServiceMoo_Get_NowClock();
 			_strm_current.callback_old = (PXTONEPLAY_CALLBACK)_strm_current.callback;
@@ -221,8 +291,12 @@ BOOL pxMME_Proc( void *arg )
 	MSG msg;
 	while( GetMessage( &msg, NULL, 0, 0 ) )
 	{
-		if( msg.message == MM_WOM_CLOSE ) break;
-		if( msg.message == MM_WOM_DONE )
+
+#ifdef pxINCLUDE_PT4i
+		if( _b_pti ){ _PTI_Proc(); if( !pxSound_IsActive() ) break; }
+#endif
+
+		if( msg.message != MM_WOM_CLOSE && msg.message == MM_WOM_DONE )
 		{
 			WAVEHDR *waveHdr = (WAVEHDR*)msg.lParam;
 			if( _CS_Lock() )
@@ -246,8 +320,8 @@ BOOL pxMME_Proc( void *arg )
 				}
 				_CS_Unlock();
 			}
-			
-			if( _strm_current.callback )
+
+			if( _strm_current.callback && !_b_pti )
 			{
 				long clock = pxtnServiceMoo_Get_NowClock();
 				_strm_current.callback_old = (PXTONEPLAY_CALLBACK)_strm_current.callback;
@@ -255,6 +329,81 @@ BOOL pxMME_Proc( void *arg )
 			}
 		}
 	}
+
+	return TRUE;
+}
+
+
+
+
+
+
+/////////////////////////////
+// コールバックのテスト
+/////////////////////////////
+
+static long _play_button_anime = 2;
+static long _if_Player_GetPlayButtonAnime(         ){ return _play_button_anime;      }
+static void _if_Player_SetPlayButtonAnime( long no ){        _play_button_anime = no; }
+
+#define PROGRESS_WIDTH  126
+#define PROGRESS_HEIGHT   6
+#define PROGRESS_X       17
+#define PROGRESS_Y       35
+static RECT progress_rect = {0};
+static long _clock_count, _clock_end;
+
+// 再生開始
+void Test_Callback_Init( void )
+{
+	long beat_num, beat_clock, meas_num;
+	pxtone_Tune_GetInformation( &beat_num, NULL, &beat_clock, &meas_num );
+
+	_clock_count = 0;
+	_clock_end   = beat_clock * beat_num * meas_num;
+}
+
+BOOL Test_Callback( long clock, BOOL bEnd ) // from ptPlayer
+{
+	// play..
+	if( !bEnd )
+	{
+		if( _if_Player_GetPlayButtonAnime() == 0 ) _if_Player_SetPlayButtonAnime( 2 );
+		if( clock >= 0 && clock != _clock_count )
+		{
+			long left  = PROGRESS_X + clock * PROGRESS_WIDTH / _clock_end;
+			if( left != progress_rect.left )
+			{
+				progress_rect.left   = left;
+				progress_rect.right  = progress_rect.left + 2;
+				progress_rect.top    = PROGRESS_Y;
+				progress_rect.bottom = PROGRESS_Y + PROGRESS_HEIGHT;
+
+				if( progress_rect.right > PROGRESS_X + PROGRESS_WIDTH ) progress_rect.right = PROGRESS_X + PROGRESS_WIDTH;
+			}
+			_clock_count = clock;
+		}
+	}
+	// stop..
+	else
+	{
+		if( _if_Player_GetPlayButtonAnime() > 1 )
+		{
+			_if_Player_SetPlayButtonAnime( 0 ); // goes back to play button
+			progress_rect.left   = PROGRESS_X;
+			progress_rect.top    = PROGRESS_Y;
+			progress_rect.bottom = PROGRESS_Y;
+			progress_rect.right  = PROGRESS_X;
+		}
+	}
+
+#ifndef DLL_EXPORT
+	extern const char *g_window_name;
+	char str[ 64 ];
+	sprintf( str, "%s [%d / %d] - [%s]", g_window_name, clock, _clock_end, bEnd ? "stopped" : "playing" );
+	extern HWND g_hWnd_Main;
+	SetWindowText( g_hWnd_Main, str );
+#endif
 
 	return TRUE;
 }

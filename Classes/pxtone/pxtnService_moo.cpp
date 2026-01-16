@@ -528,7 +528,7 @@ b32 pxtnServiceMoo_Preparation( const pxtnVOMITPREPARATION *p_prep )
 
 	dlog( "sampleTune_Start( 0 );" );
 
-	Streaming_Get_SampleInfo( (long*)&_dst_ch_num, (long*)&_dst_sps, (long*)&_dst_byte_per_smp );
+	Streaming_Get_SampleInfo( (s32*)&_dst_ch_num, (s32*)&_dst_sps, (s32*)&_dst_byte_per_smp );
 
 	_moo_freqtable      = pxtnFrequency_GetDirect ( &_moo_tablesize );
 	_unit_num           = pxtnUnit_Count          ();

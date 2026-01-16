@@ -174,6 +174,10 @@
     <ClInclude Include="..\Classes\Fixture\DataDevice.h" />
     <ClInclude Include="..\Classes\Fixture\DebugLog.h" />
     <ClInclude Include="..\Classes\Fixture\pxMem.h" />
+    <ClInclude Include="..\Classes\PT4i\DxSound_PTI.h" />
+    <ClInclude Include="..\Classes\PT4i\PT4i.h" />
+    <ClInclude Include="..\Classes\PT4i\pxMME_PTI.h" />
+    <ClInclude Include="..\Classes\PT4i\pxSound.h" />
     <ClInclude Include="..\Classes\pxtone\pxStdDef.h" />
     <ClInclude Include="..\Classes\pxtone\pxtnDelay.h" />
     <ClInclude Include="..\Classes\pxtone\pxtnError.h" />
@@ -206,6 +210,10 @@
     <ClCompile Include="..\Classes\Fixture\DataDevice.cpp" />
     <ClCompile Include="..\Classes\Fixture\DebugLog.cpp" />
     <ClCompile Include="..\Classes\Fixture\pxMem.cpp" />
+    <ClCompile Include="..\Classes\PT4i\DxSound_PTI.cpp" />
+    <ClCompile Include="..\Classes\PT4i\PT4i.cpp" />
+    <ClCompile Include="..\Classes\PT4i\pxMME_PTI.cpp" />
+    <ClCompile Include="..\Classes\PT4i\pxSound.cpp" />
     <ClCompile Include="..\Classes\pxtone\pxtnDelay.cpp" />
     <ClCompile Include="..\Classes\pxtone\pxtnError.cpp" />
     <ClCompile Include="..\Classes\pxtone\pxtnEvelist.cpp" />

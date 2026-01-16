@@ -144,7 +144,7 @@ static enum_TagCode _CheckTagCode( const char *p_code )
 
 static b32 _ReadVersion( DDV *p_read, enum_FMTVER *p_fmt_ver, u16 *p_exe_ver )
 {
-	char version[ _VERSIONSIZE  ] = {0};
+	char version[ _VERSIONSIZE ] = {0};
 	u16 dummy;
 
 	if( !ddv_Read( version, 1, _VERSIONSIZE, p_read ) ){ pxtnError_Set( "read." ); return _false; }
@@ -175,7 +175,6 @@ static b32 _ReadTuneItems( DDV *p_read )
 	b32 b_end = _false;
 	char code[ _CODESIZE + 1 ] = {0};
 	b32 pbNew = _false;
-	const char *culprit = NULL;
 
 
 	/// âπåπÇÊÇËêÊÇ…ÇªÇÍÇ…ëŒâûÇ∑ÇÈÉÜÉjÉbÉgÇ™Ç»ÇØÇÍÇŒÇ»ÇÁÇ»Ç¢ ///
@@ -189,39 +188,39 @@ static b32 _ReadTuneItems( DDV *p_read )
 		case enum_TagCode_antiOPER    : pxtnError_Set( "anti operation." ); goto term;
 
 		// new -------
-		case enum_TagCode_num_UNIT    : if( !pxtnIO_num_UNIT_Read( p_read, &pbNew ) ){ pxtnError_Set( "unit num."    ); culprit = _code_num_UNIT; goto term; } break;
-		case enum_TagCode_MasterV5    : if( !pxtnIO_MasterV5_Read( p_read, &pbNew ) ){ pxtnError_Set( "read master." ); culprit = _code_MasterV5; goto term; } break;
+		case enum_TagCode_num_UNIT    : if( !pxtnIO_num_UNIT_Read( p_read, &pbNew ) ){ pxtnError_Set( "unit num."    ); goto term; } break;
+		case enum_TagCode_MasterV5    : if( !pxtnIO_MasterV5_Read( p_read, &pbNew ) ){ pxtnError_Set( "read master." ); goto term; } break;
 		case enum_TagCode_Event_V5    : if( !pxtnIO_Event_V5_Read( p_read         ) ){ pxtnError_Set( "read event."  ); goto term; } break;
 
-		case enum_TagCode_matePCM     : if( !pxtnIO_matePCM_Read ( p_read, &pbNew ) ){ pxtnError_Set( "read pcm."    ); culprit = _code_matePCM; goto term; } break;
-		case enum_TagCode_matePTV     : if( !pxtnIO_matePTV_Read ( p_read, &pbNew ) ){ pxtnError_Set( "read ptv."    ); culprit = _code_matePTV; goto term; } break;
-		case enum_TagCode_matePTN     : if( !pxtnIO_matePTN_Read ( p_read, &pbNew ) ){ pxtnError_Set( "read ptn."    ); culprit = _code_matePTN; goto term; } break;
+		case enum_TagCode_matePCM     : if( !pxtnIO_matePCM_Read ( p_read, &pbNew ) ){ pxtnError_Set( "read pcm."    ); goto term; } break;
+		case enum_TagCode_matePTV     : if( !pxtnIO_matePTV_Read ( p_read, &pbNew ) ){ pxtnError_Set( "read ptv."    ); goto term; } break;
+		case enum_TagCode_matePTN     : if( !pxtnIO_matePTN_Read ( p_read, &pbNew ) ){ pxtnError_Set( "read ptn."    ); goto term; } break;
 
 		case enum_TagCode_mateOGGV    :
 
 #ifdef pxINCLUDE_OGGVORBIS
-			if( !pxtnIO_mateOGGV_Read( p_read, &pbNew ) ){ pxtnError_Set( "read oggv." ); culprit = _code_mateOGGV; goto term; }
+			if( !pxtnIO_mateOGGV_Read( p_read, &pbNew ) ){ pxtnError_Set( "read oggv." ); goto term; }
 #else
 			pxtnError_Set( "ogg no supported" ); goto term;
 #endif
 			break;
 
-		case enum_TagCode_effeDELA    : if( !pxtnIO_effeDELA_Read( p_read, &pbNew ) ){ pxtnError_Set( "read delay."         ); culprit = _code_effeDELA; goto term; } break;
-		case enum_TagCode_effeOVER    : if( !pxtnIO_effeOVER_Read( p_read, &pbNew ) ){ pxtnError_Set( "read overdrive."     ); culprit = _code_effeOVER; goto term; } break;
+		case enum_TagCode_effeDELA    : if( !pxtnIO_effeDELA_Read( p_read, &pbNew ) ){ pxtnError_Set( "read delay."         ); goto term; } break;
+		case enum_TagCode_effeOVER    : if( !pxtnIO_effeOVER_Read( p_read, &pbNew ) ){ pxtnError_Set( "read overdrive."     ); goto term; } break;
 		case enum_TagCode_textNAME    : if( !pxtnIO_textNAME_Read( p_read         ) ){ pxtnError_Set( "read name."          ); goto term; } break;
 		case enum_TagCode_textCOMM    : if( !pxtnIO_textCOMM_Read( p_read         ) ){ pxtnError_Set( "read comment."       ); goto term; } break;
-		case enum_TagCode_assiWOIC    : if( !pxtnIO_assiWOIC_Read( p_read, &pbNew ) ){ pxtnError_Set( "read assist(voice)." ); culprit = _code_assiWOIC; goto term; } break;
-		case enum_TagCode_assiUNIT    : if( !pxtnIO_assiUNIT_Read( p_read, &pbNew ) ){ pxtnError_Set( "read assist(unit)."  ); culprit = _code_assiUNIT; goto term; } break;
+		case enum_TagCode_assiWOIC    : if( !pxtnIO_assiWOIC_Read( p_read, &pbNew ) ){ pxtnError_Set( "read assist(voice)." ); goto term; } break;
+		case enum_TagCode_assiUNIT    : if( !pxtnIO_assiUNIT_Read( p_read, &pbNew ) ){ pxtnError_Set( "read assist(unit)."  ); goto term; } break;
 		case enum_TagCode_pxtoneND    : b_end = _true; break;
 
 		// old -------
-		case enum_TagCode_x4x_evenMAST: if( !pxtnIO_Master_x4x_Read ( p_read, &pbNew              ) ){ pxtnError_Set( "read master."       ); culprit = _code_x4x_evenMAST; goto term; } break;
-		case enum_TagCode_x4x_evenUNIT: if( !pxtnIO_Event_x4x_Read  ( p_read, _false, _true, &pbNew ) ){ pxtnError_Set( "read event."        ); culprit = _code_x4x_evenUNIT; goto term; } break;
-		case enum_TagCode_x3x_pxtnUNIT: if( !pxtnIO_Unit_Read       ( p_read, &pbNew              ) ){ pxtnError_Set( "read unit."         ); culprit = _code_x3x_pxtnUNIT; goto term; } break;
-		case enum_TagCode_x1x_PROJ    : if( !pxtnIO_x1x_Project_Read( p_read                      ) ){ pxtnError_Set( "read project(old)." ); goto term; } break;
-		case enum_TagCode_x1x_UNIT    : if( !pxtnIO_UnitOld_Read    ( p_read                      ) ){ pxtnError_Set( "read unit(old)."    ); goto term; } break;
-		case enum_TagCode_x1x_PCM     : if( !pxtnIO_matePCM_Read    ( p_read, &pbNew              ) ){ pxtnError_Set( "read pcm(old)."     ); culprit = _code_x1x_PCM; goto term; } break;
-		case enum_TagCode_x1x_EVEN    : if( !pxtnIO_Event_x4x_Read  ( p_read, _true, _false, &pbNew ) ){ pxtnError_Set( "read event(old)."   ); culprit = _code_x1x_EVEN; goto term; } break;
+		case enum_TagCode_x4x_evenMAST: if( !pxtnIO_Master_x4x_Read ( p_read, &pbNew                ) ){ pxtnError_Set( "read master."       ); goto term; } break;
+		case enum_TagCode_x4x_evenUNIT: if( !pxtnIO_Event_x4x_Read  ( p_read, _false, _true, &pbNew ) ){ pxtnError_Set( "read event."        ); goto term; } break;
+		case enum_TagCode_x3x_pxtnUNIT: if( !pxtnIO_Unit_Read       ( p_read, &pbNew                ) ){ pxtnError_Set( "read unit."         ); goto term; } break;
+		case enum_TagCode_x1x_PROJ    : if( !pxtnIO_x1x_Project_Read( p_read                        ) ){ pxtnError_Set( "read project(old)." ); goto term; } break;
+		case enum_TagCode_x1x_UNIT    : if( !pxtnIO_UnitOld_Read    ( p_read                        ) ){ pxtnError_Set( "read unit(old)."    ); goto term; } break;
+		case enum_TagCode_x1x_PCM     : if( !pxtnIO_matePCM_Read    ( p_read, &pbNew                ) ){ pxtnError_Set( "read pcm(old)."     ); goto term; } break;
+		case enum_TagCode_x1x_EVEN    : if( !pxtnIO_Event_x4x_Read  ( p_read, _true, _false, &pbNew ) ){ pxtnError_Set( "read event(old)."   ); goto term; } break;
 		case enum_TagCode_x1x_END     : b_end = _true; break;
 
 		default: pxtnError_Set( "unknown [%s]", code ); goto term;
@@ -230,7 +229,7 @@ static b32 _ReadTuneItems( DDV *p_read )
 
 	b_ret = _true;
 term:
-	if( pbNew ) pxtnError_Set( "it\'s new format [%s]", culprit );
+	if( pbNew ) pxtnError_Set( "it\'s new format [%s]", code );
 	
 	return b_ret;
 }
@@ -526,4 +525,33 @@ term:
 	if( !b_ret ) pxtnService_Clear();
 
 	return b_ret;
+}
+
+b32 pxtnService_CheckPTIFormat( b8 *b_pti, DDV *p_read, const char *path )
+{
+	// Header check
+	*b_pti = _false;
+	enum_FMTVER dummy1; u16 dummy2;
+	if( _ReadVersion( p_read, &dummy1, &dummy2 ) ) return _true; // File is 'ptcop' or 'pttune'
+	ddv_Seek( p_read, 0, SEEK_SET );
+
+	// PTI info check
+	u8 beat_tempo, beat_divide;
+	if( !ddv_Read( &beat_tempo , sizeof(u8), 1, p_read ) ){ pxtnError_Set( "read."          ); return _false; }
+	if( !ddv_Read( &beat_divide, sizeof(u8), 1, p_read ) ){ pxtnError_Set( "read."          ); return _false; }
+	if( !beat_tempo || !beat_divide                      ){ pxtnError_Set( "beat divide 0"  ); return _false; }
+
+	// PTI beat tempo check
+	s32 result_wait  =       60  / ( (f32)  beat_tempo  * (s32)beat_divide ) * 60;
+	f32 result_tempo = (60 * 60) /   (f32)( result_wait *      beat_divide );
+	if( isinf( result_tempo ) || isnan( result_tempo )   ){ pxtnError_Set( "inv-beat tempo" ); return _false; }
+	*b_pti = _true;
+
+	pxtnService_Clear();
+
+	char name[ 16 ];
+	strcpy( name, PathFindFileName( path ) );
+	PathRemoveExtension( name );
+	pxtnText_Set_Name  ( name );
+	return _true;
 }

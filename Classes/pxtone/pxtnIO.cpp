@@ -188,6 +188,41 @@ typedef struct
 }
 _x1x_PROJECT;
 
+#ifdef pxINCLUDE_PT4i
+static enum EVETYPE_PTI
+{
+	EVETYPE_PTI_NONE  = 0,
+	EVETYPE_PTI_WAIT     ,
+	EVETYPE_PTI_ON       ,
+	EVETYPE_PTI_VOL      ,
+	EVETYPE_PTI_KEY      ,
+	EVETYPE_PTI_REPEAT   ,
+	EVETYPE_PTI_LAST     ,
+
+	EVETYPE_PTI_NUM,
+};
+
+static const char *_eve_kind[ EVENTKIND_NUM ] =
+{
+	"",
+	"On",
+	"key",
+	"pan",
+	"vel",
+	"vol",
+	"portament",
+	"beat-clock",
+	"beat-tempo",
+	"beat-num",
+	"repeat",
+	"last",
+	"voice-no",
+	"group-no",
+	"correct",
+	"pan-time",
+};
+#endif
+
 
 
 ////////////////////////////////////////
@@ -479,7 +514,7 @@ b32 pxtnIO_Master_x4x_Write( FILE *fp, s32 rough )
 	if( !ddv_Variable_Write( beat_clock / rough , fp, NULL ) ) return _false;
 	if( !ddv_Variable_Write( EVENTKIND_BEATTEMPO, fp, NULL ) ) return _false;
 	if( !ddv_Variable_Write( EVENTKIND_NULL     , fp, NULL ) ) return _false;
-	if( !ddv_Variable_Write( btempo             , fp, NULL ) ) return _false;
+	if( !ddv_Variable_Write( (s32)btempo        , fp, NULL ) ) return _false;
 	if( !ddv_Variable_Write( EVENTKIND_BEATNUM  , fp, NULL ) ) return _false;
 	if( !ddv_Variable_Write( EVENTKIND_NULL     , fp, NULL ) ) return _false;
 	if( !ddv_Variable_Write( beat_num           , fp, NULL ) ) return _false;
@@ -1047,4 +1082,159 @@ b32 pxtnIO_x1x_Project_Read( DDV *p_read )
 	pxtnMaster_Set( beat_num, beat_tempo, quarter_clock );
 
 	return _true;
+}
+
+#ifdef pxINCLUDE_PT4i
+static b32 _Write_Events( u8 unit_no, u8 kind, u8 value, FILE *fp )
+{
+	if( fwrite( &unit_no, sizeof(u8), 1, fp ) != 1 ) return _false;
+	if( fwrite( &kind   , sizeof(u8), 1, fp ) != 1 ) return _false;
+	if( fwrite( &value  , sizeof(u8), 1, fp ) != 1 ) return _false;
+	return _true;
+}
+#endif
+b32 pxtnIO_PTI_Write( const char *path_pti, s32 beat_divide )
+{
+#ifdef pxINCLUDE_PT4i
+	b32   b_ret        = _false;
+	b32   repeat_clock = _false;
+	FILE *fp_pti       =  NULL ;
+	FILE *fp_txt       =  NULL ;
+	s32   absolute     = 0;
+	s32   eve_num      = 0;
+	s32   clock;
+
+	TUNEUNITTONESTRUCT p_u[ 6 ] = {0};
+	for( s32 u = 0; u < 6; u++ )
+	{
+		p_u[ u ]._key_now    = EVENTDEFAULT_KEY + 0xA00;
+		p_u[ u ]._v_VOLUME   = EVENTDEFAULT_VOLUME;
+		p_u[ u ]._v_VELOCITY = EVENTDEFAULT_VELOCITY;
+	}
+
+	s32 beat_num; f32 beat_tempo; s32 beat_clock;
+	pxtnMaster_Get( &beat_num, &beat_tempo, &beat_clock );
+
+	s32 clock_repeat = beat_clock * beat_num * pxtnMaster_Get_RepeatMeas();
+	s32 clock_last   = beat_clock * beat_num * pxtnMaster_Get_LastMeas  ();
+	s32 div_clock    = beat_clock / beat_divide;
+
+	char path_txt[ MAX_PATH ];
+	strcpy( path_txt, path_pti );
+	PathRemoveExtension( path_txt );
+	strcat( path_txt, ".txt" );
+
+	fp_pti = fopen( path_pti, "wb" ); if( !fp_pti ) goto End;
+	fp_txt = fopen( path_txt, "wt" ); if( !fp_txt ) goto End;
+
+	u8 btempo  = (u8)beat_tempo;
+	u8 bdivide = beat_divide;
+
+	if( fwrite( &btempo , sizeof(u8), 1, fp_pti ) != 1 ) goto End;
+	if( fwrite( &bdivide, sizeof(u8), 1, fp_pti ) != 1 ) goto End;
+	fprintf( fp_txt, "beat-tempo : %d\n", (s32)beat_tempo  );
+	fprintf( fp_txt, "beat-divide: %d\n",      beat_divide );
+	fprintf( fp_txt, "div-clock  : %d\n",      div_clock   );
+
+
+	for( const EVERECORD *p = pxtnEvelist_Get_Records(); p; p = p->next )
+	{
+		if( !repeat_clock && p->clock >= clock_repeat )
+		{
+			repeat_clock = _true;
+			clock = ( clock_repeat - absolute ) / div_clock;
+			if( !_Write_Events( 0, EVETYPE_PTI_REPEAT, (u8)clock, fp_pti ) ) goto End;
+			fprintf( fp_txt, "%02d repeat\n", clock );
+			absolute = clock_repeat;
+			eve_num++;
+		}
+		clock = ( p->clock - absolute ) / div_clock;
+
+		if( clock )
+		{
+			if( !_Write_Events( 0, EVETYPE_PTI_WAIT, (u8)clock, fp_pti ) ) goto End;
+			fprintf( fp_txt, "%02d\n", clock );
+			absolute = p->clock;
+			eve_num++;
+		}
+
+		TUNEUNITTONESTRUCT *unit = &p_u[ p->unit_no ];
+
+		b32 b_eve    = _false;
+		u8  pti_unit = p->unit_no;
+		u8  pti_kind;
+		u8  pti_value;
+
+		switch( p->kind )
+		{
+			case EVENTKIND_ON:
+				{
+					pti_kind  = EVETYPE_PTI_ON;
+					pti_value = (u8)( p->value / div_clock );
+					b_eve     = _true;
+				}
+				break;
+
+			case EVENTKIND_KEY:
+				if( unit->_key_now != p->value )
+				{
+					unit->_key_now = p->value;
+
+					pti_kind  = EVETYPE_PTI_KEY;
+					pti_value = (u8)( p->value / 256 ) + 190;
+					b_eve     = _true;
+				}
+				break;
+
+			case EVENTKIND_VELOCITY:
+				if( unit->_v_VELOCITY != p->value )
+				{
+					unit->_v_VELOCITY = p->value;
+
+					pti_kind  = EVETYPE_PTI_VOL;
+					pti_value = (u8)( (unit->_v_VELOCITY * unit->_v_VOLUME) / 127 );
+					b_eve     = _true;
+				}
+				break;
+
+			case EVENTKIND_VOLUME:
+				if( unit->_v_VOLUME != p->value )
+				{
+					unit->_v_VOLUME = p->value;
+
+					pti_kind  = EVETYPE_PTI_VOL;
+					pti_value = (u8)( (unit->_v_VELOCITY * unit->_v_VOLUME) / 127 );
+					b_eve     = _true;
+				}
+				break;
+		}
+
+		if( b_eve )
+		{
+			if( !_Write_Events( pti_unit, pti_kind, pti_value, fp_pti ) ) goto End;
+			fprintf( fp_txt, "\tunit: %02d, kind: %s v:%d\n",
+						(s32)p->unit_no, _eve_kind[ p->kind ], (s32)pti_value );
+			eve_num++;
+		}
+	}
+
+	if( clock_last )
+	{
+		clock = ( clock_last - absolute ) / div_clock;
+		if( !_Write_Events( 0, EVETYPE_PTI_LAST, (u8)clock, fp_pti ) ) goto End;
+		fprintf( fp_txt, "%02d last\n", clock );
+		absolute = clock_last;
+		eve_num++;
+	}
+	fprintf( fp_txt, "event num: %d\n", eve_num );
+
+	b_ret = _true;
+End:
+	if( fp_txt ) fclose( fp_txt );
+	if( fp_pti ) fclose( fp_pti );
+
+	return b_ret;
+#else
+	return _false;
+#endif
 }

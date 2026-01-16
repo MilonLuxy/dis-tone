@@ -101,6 +101,17 @@ END
 BMP_PXTONE              BITMAP                  "icon/pxtone.bmp"
 #endif
 
+/////////////////////////////////////////////////////////////////////////////
+//
+// PTI
+//
+
+PTV_TRIA784             PTI                     "pti/tria784.ptvoice"
+PTV_SAW784              PTI                     "pti/saw784.ptvoice"
+PTV_RECT784             PTI                     "pti/rect784.ptvoice"
+PTN_HATC                PTI                     "pti/hatc.ptnoise"
+PTN_BD6                 PTI                     "pti/bd6.ptnoise"
+
 #endif    // “ú–{Œê (“ú–{) resources
 /////////////////////////////////////////////////////////////////////////////
 

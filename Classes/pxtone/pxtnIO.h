@@ -22,6 +22,8 @@ b32 pxtnIO_Event_V5_Write  ( FILE *fp                             , s32 rough );
 b32 pxtnIO_MasterV5_Write  ( FILE *fp                             , s32 rough );
 b32 pxtnIO_Master_x4x_Write( FILE *fp                             , s32 rough );
 
+b32 pxtnIO_PTI_Write       ( const char *path_pti,     s32 beat_divide        );
+
 // Read..
 b32 pxtnIO_assiUNIT_Read           ( DDV *p_read,                                   b32 *pbNew );
 b32 pxtnIO_num_UNIT_Read           ( DDV *p_read,                                   b32 *pbNew );

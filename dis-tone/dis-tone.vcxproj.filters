@@ -25,6 +25,9 @@
     <Filter Include="Classes\Streaming\DirectX5">
       <UniqueIdentifier>{365f7416-8ff0-4caa-ba72-401ac4e881dd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Classes\PT4i">
+      <UniqueIdentifier>{0e3c47fc-3306-4b4c-b600-53137ff23e5c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Classes\vc\resource.h">
@@ -117,6 +120,18 @@
     <ClInclude Include="..\Classes\pxtone\pxStdDef.h">
       <Filter>Classes\pxtone</Filter>
     </ClInclude>
+    <ClInclude Include="..\Classes\PT4i\DxSound_PTI.h">
+      <Filter>Classes\PT4i</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\PT4i\PT4i.h">
+      <Filter>Classes\PT4i</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\PT4i\pxMME_PTI.h">
+      <Filter>Classes\PT4i</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\PT4i\pxSound.h">
+      <Filter>Classes\PT4i</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Classes\StdAfx\StdAfx.cpp">
@@ -208,6 +223,18 @@
     </ClCompile>
     <ClCompile Include="..\Classes\pxtone\pxtnIO.cpp">
       <Filter>Classes\pxtone</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\PT4i\DxSound_PTI.cpp">
+      <Filter>Classes\PT4i</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\PT4i\PT4i.cpp">
+      <Filter>Classes\PT4i</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\PT4i\pxMME_PTI.cpp">
+      <Filter>Classes\PT4i</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\PT4i\pxSound.cpp">
+      <Filter>Classes\PT4i</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

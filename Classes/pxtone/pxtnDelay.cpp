@@ -44,7 +44,7 @@ static b32 _Tone_Ready( DELAYSTRUCT *delay )
 	
 	s32 beat_num, sps; f32 beat_tempo;
 	pxtnMaster_Get( &beat_num, &beat_tempo, NULL );
-	Streaming_Get_SampleInfo( NULL, (long*)&sps, NULL );
+	Streaming_Get_SampleInfo( NULL, (s32*)&sps, NULL );
 
 	delay->_offset   = 0;
 	delay->_rate_s32 = (s32)delay->_rate; // /100;
@@ -91,7 +91,7 @@ void pxtnDelay_Release( void )
 
 void pxtnDelay_Tone_Clear( void )
 {
-	s32 bps; Streaming_Get_SampleInfo( NULL, NULL, (long*)&bps );
+	s32 bps; Streaming_Get_SampleInfo( NULL, NULL, (s32*)&bps );
 
 	for( s32 i = 0; i < _delay_num; i++ )
 	{

@@ -18,6 +18,7 @@
 #include "../pxtone/pxtnText.h"
 #include "../pxtone/pxtnUnit.h"
 #include "../pxtone/pxtnWoice.h"
+#include "../PT4i/PT4i.h"
 #include "../Streaming/Streaming.h"
 
 // Initializer values
@@ -30,6 +31,7 @@
 #define _DEFAULT_COUNT      50
 
 static bool _b_strm_active   = false;
+static bool _b_pti           = false;
 static int  _main_ch_num     =   0  ;
 static int  _main_sps        =   0  ;
 static int  _main_bps        =   0  ;
@@ -61,12 +63,24 @@ static bool _Compile_Params( HWND hWnd, int channel_num, int sps, int bps, float
 	return true;
 }
 
-static bool _Tune_Read( DDV *p_read )
+static bool _Tune_Read( DDV *p_read, const char *name )
 {
+#ifdef pxINCLUDE_PT4i
+	if( name )
+	{
+		if( !pxtnService_CheckPTIFormat( &_b_pti, p_read, name ) ){ _SetError( pxtnError_Get() ); return false; }
+		ddv_Seek( p_read, 0, SEEK_SET );
+
+		if( _b_pti )
+		{
+			if( !PT4i_Load( p_read->fp ) ){ _SetError( PT4i_Get_Error() ); return false; }
+			return true;
+		}
+	}
+#endif
+
 	int event_num = 0;
 	if( !(event_num = pxtnService_Pre_Count_Event( p_read, _DEFAULT_COUNT )) ){ _SetError( "error: no event" ); return false; }
-
-	pxtnService_Clear  ();
 
 	ddv_Seek( p_read, 0, SEEK_SET );
 	pxtnUnit_Release   ();
@@ -108,9 +122,9 @@ bool DLLAPI pxtn_Ready( HWND hWnd, int channel_num, int sps, int bps, float buff
 	if( !pxtnUnit_Initialize     ( _UNIT_NUM  ) ){ _SetError( "error: units"     ); goto End; }
 	if( !pxtnDelay_Initialize    ( _DELAY_NUM ) ){ _SetError( "error: delay"     ); goto End; }
 	if( !pxtnOverDrive_Initialize( _OD_NUM    ) ){ _SetError( "error: overdrive" ); goto End; }
-
-#ifdef  pxINCLUDE_OGGVORBIS
-//	Present in full pxtone DLL version only.
+	
+//	Present in full pxtone DLL versions only.
+#ifdef pxINCLUDE_OGGVORBIS
 	pxtnOggv_Initialize( pxtn_free, pxtn_load, pxtn_decode, pxtn_size, pxtn_write, pxtn_read );
 #endif
 
@@ -119,8 +133,8 @@ bool DLLAPI pxtn_Ready( HWND hWnd, int channel_num, int sps, int bps, float buff
 
 	if( buffer_sec > 0 )
 	{
-		_b_strm_active = _Compile_Params( hWnd, channel_num, sps, bps, buffer_sec, bDirectSound, pProc );
-		if( !_b_strm_active ) return false;
+		if( !_Compile_Params( hWnd, channel_num, sps, bps, buffer_sec, bDirectSound, pProc ) ) return false;
+		_b_strm_active = true;
 	}
 	else _b_strm_active = false;
 
@@ -148,8 +162,8 @@ bool DLLAPI pxtn_Reset( HWND hWnd, int channel_num, int sps, int bps, float buff
 
 	if( buffer_sec > 0 )
 	{
-		_b_strm_active = _Compile_Params( hWnd, channel_num, sps, bps, buffer_sec, bDirectSound, pProc );
-		if( !_b_strm_active ) return false;
+		if( !_Compile_Params( hWnd, channel_num, sps, bps, buffer_sec, bDirectSound, pProc ) ) return false;
+		_b_strm_active = true;
 	}
 	else _b_strm_active = false;
 
@@ -177,7 +191,7 @@ void DLLAPI pxtn_GetQuality( int *p_channel_num, int *p_sps, int *p_bps, int *p_
 {
 	if( _b_strm_active )
 	{
-		Streaming_GetQuality( (long*)p_channel_num, (long*)p_sps, (long*)p_bps, (long*)p_sample_per_buf );
+		Streaming_GetQuality( (s32*)p_channel_num, (s32*)p_sps, (s32*)p_bps, (s32*)p_sample_per_buf );
 	}
 	else
 	{
@@ -199,6 +213,9 @@ bool DLLAPI pxtn_Release( void )
 		if( !Streaming_Release() ) return false;
 		_b_strm_active = false;
 	}
+#ifdef pxINCLUDE_PT4i
+	PT4i_Release();
+#endif
 	CriticalSection_Release();
 	return true;
 }
@@ -209,7 +226,7 @@ bool DLLAPI pxtn_Tune_Load( HMODULE hModule, const char *type_name, const char *
 
 	DDV read;
 	if( !ddv_Open( hModule, file_name, type_name, &read ) ){ _SetError( "error: can\'t open" ); goto End; }
-	if( !_Tune_Read( &read ) ) goto End;
+	if( !_Tune_Read( &read, file_name ) ) goto End;
 	
 	b_ret = true;
 End:
@@ -224,7 +241,7 @@ bool DLLAPI pxtn_Tune_Read( void *p, int size )
 
 	DDV read;
 	if( !_Read_FromMemory( p, size, &read ) ){ _SetError( "error: can\'t open" ); goto End; }
-	if( !_Tune_Read( &read ) ) goto End;
+	if( !_Tune_Read( &read, NULL ) ) goto End;
 
 	b_ret = true;
 End:
@@ -256,11 +273,11 @@ bool DLLAPI pxtn_Tune_Start( int start_sample, int fadein_msec, float volume )
 
 	if( _b_strm_active )
 	{
-		if( !Streaming_Tune_Start      ( &prep ) ){ _SetError( "error: start tune" ); return false; }
+		if( !Streaming_Tune_Start( &prep, _b_pti ) ){ _SetError( "error: start tune" ); return false; }
 	}
 	else
 	{
-		if( !pxtnServiceMoo_Preparation( &prep ) ){ _SetError( "error: start tune" ); return false; }
+		if( !pxtnServiceMoo_Preparation( &prep   ) ){ _SetError( "error: start tune" ); return false; }
 	}
 
 	return true;
@@ -270,17 +287,27 @@ int DLLAPI pxtn_Tune_Fadeout( int msec )
 {
 	if( _b_strm_active ) Streaming_Tune_Fadeout(     msec );
 	else                 pxtnServiceMoo_SetFade( -1, msec );
+#ifdef pxINCLUDE_PT4i
+	if( _b_pti ) return PT4i_Get_NowEve();
+#endif
 	return pxtnServiceMoo_Get_SamplingOffset();
 }
 
 void DLLAPI pxtn_Tune_SetVolume( float v )
 {
+#ifdef pxINCLUDE_PT4i
+	if( _b_pti ) PT4i_SetVolume( v );
+#endif
 	pxtnServiceMoo_Set_Master_Volume( v );
 }
 
 int DLLAPI pxtn_Tune_Stop( void )
 {
 	if( _b_strm_active ) Streaming_Tune_Stop();
+
+#ifdef pxINCLUDE_PT4i
+	if( _b_pti ) return PT4i_Get_NowEve();
+#endif
 	return pxtnServiceMoo_Get_SamplingOffset();
 }
 
@@ -297,17 +324,31 @@ void DLLAPI pxtn_Tune_SetLoop( bool bLoop )
 
 void DLLAPI pxtn_Tune_GetInformation( int *p_beat_num, float *p_beat_tempo, int *p_beat_clock, int *p_meas_num )
 {
-	pxtnMaster_Get( (long*)p_beat_num, p_beat_tempo, (long*)p_beat_clock );
+#ifdef pxINCLUDE_PT4i
+	if( _b_pti )
+	{
+		PT4i_Get_Information( p_beat_num, p_beat_tempo, p_beat_clock, p_meas_num );
+		return;
+	}
+#endif
+
+	pxtnMaster_Get( (s32*)p_beat_num, p_beat_tempo, (s32*)p_beat_clock );
 	if( p_meas_num ) *p_meas_num = pxtnMaster_Get_PlayMeas();
 }
 
 int DLLAPI pxtn_Tune_GetRepeatMeas( void )
 {
+#ifdef pxINCLUDE_PT4i
+	if( _b_pti ) return PT4i_Get_RepeatMeas();
+#endif
 	return pxtnMaster_Get_RepeatMeas();
 }
 
 int DLLAPI pxtn_Tune_GetPlayMeas( void )
 {
+#ifdef pxINCLUDE_PT4i
+	if( _b_pti ) return PT4i_Get_PlayMeas();
+#endif
 	return pxtnMaster_Get_PlayMeas();
 }
 
@@ -323,7 +364,7 @@ const char DLLAPI *pxtn_Tune_GetComment( void )
 
 bool DLLAPI pxtn_Tune_Vomit( void *p, int sample_num )
 {
-	if( _b_strm_active || !p || sample_num <= 0 ) return false;
+	if( _b_strm_active || !p || !sample_num ) return false;
 	return pxtnServiceMoo_Proc( p, sample_num * _main_ch_num * _main_bps/8 );
 }
 
