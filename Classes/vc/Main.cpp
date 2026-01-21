@@ -1,8 +1,8 @@
 ﻿#include <StdAfx.h>
 
 #ifndef DLL_EXPORT
-const char *tune_file_name  = "\\opening.pti";
-//const char *tune_file_name  = "\\opening.ptcop";
+//const char *tune_file_name  = "\\opening.pti";
+const char *tune_file_name  = "\\opening.ptcop";
 const char *noise_file_name = "\\ok.ptnoise";
 const char *g_window_name   = "testPxtone";
 HWND g_hWnd_Main = NULL;

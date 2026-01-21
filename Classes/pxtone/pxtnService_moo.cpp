@@ -520,7 +520,7 @@ b32  pxtnServiceMoo_SetFade( s32 fade, s32 msec )
 // preparation
 b32 pxtnServiceMoo_Preparation( const pxtnVOMITPREPARATION *p_prep )
 {
-	if( p_prep->start_pos_sample > p_prep->start_pos_meas || p_prep->start_pos_sample > p_prep->meas_end ) return _false;
+	if( p_prep->meas_repeat < p_prep->start_pos_meas || p_prep->meas_repeat > p_prep->meas_end ) return _false;
 	if( !CriticalSection_In() ) return _false;
 
 	b32 b_ret   = _false;
@@ -545,7 +545,8 @@ b32 pxtnServiceMoo_Preparation( const pxtnVOMITPREPARATION *p_prep )
 	_moo_smp_end        = (s32)( (f64)p_prep->meas_end       * (f64)_moo_bt_num * (f64)_moo_bt_clock * _moo_clock_rate );
 	_moo_smp_repeat     = (s32)( (f64)p_prep->meas_repeat    * (f64)_moo_bt_num * (f64)_moo_bt_clock * _moo_clock_rate );
 
-	if( p_prep->meas_repeat && p_prep->meas_repeat < _moo_smp_end ) _moo_smp_start = p_prep->meas_repeat;
+	if( p_prep->master_volume >= 0 ) _moo_master_vol = p_prep->master_volume;
+	if( p_prep->start_pos_sample && p_prep->start_pos_sample < _moo_smp_end ) _moo_smp_start = p_prep->start_pos_sample;
 
 	_moo_smp_count  = _moo_smp_start;
 	_moo_smp_smooth = _dst_sps / 250; // (0.004sec) // (0.010sec)

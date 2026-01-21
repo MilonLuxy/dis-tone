@@ -5,10 +5,10 @@
 typedef struct
 {
 	s32 start_pos_meas  ;
-	s32 start_pos_sample;
-
-	s32 meas_end        ;
 	s32 meas_repeat     ;
+	s32 meas_end        ;
+
+	s32 start_pos_sample;
 	f32 fadein_sec      ;
 
 	f32 master_volume   ;

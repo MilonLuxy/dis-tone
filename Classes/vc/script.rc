@@ -38,7 +38,7 @@ END
 
 3 TEXTINCLUDE 
 BEGIN
-    "\r\n"
+    "../pxtone/pxStdDef.h\r\n"
     "\0"
 END
 
@@ -83,7 +83,6 @@ BEGIN
 END
 
 
-#ifndef DLL_EXPORT
 /////////////////////////////////////////////////////////////////////////////
 //
 // Icon
@@ -99,7 +98,6 @@ END
 //
 
 BMP_PXTONE              BITMAP                  "icon/pxtone.bmp"
-#endif
 
 /////////////////////////////////////////////////////////////////////////////
 //
