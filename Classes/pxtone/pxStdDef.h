@@ -12,6 +12,12 @@
 #include <stdio.h>
 #include <math.h>
 
+#ifdef  pxINCLUDE_OGGVORBIS
+    #pragma comment( lib, "libogg"        )
+    #pragma comment( lib, "libvorbis"     )
+    #pragma comment( lib, "libvorbisfile" )
+#endif
+
 typedef unsigned char      u8 ;
 typedef   signed char      s8 ;
 typedef unsigned short     u16;

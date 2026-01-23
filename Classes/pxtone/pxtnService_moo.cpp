@@ -347,7 +347,7 @@ static b32 _PXTONE_SAMPLE( void *p_data )
 			{
 				s32 a = dela->_bufs[ ch ][ dela->_offset ] * dela->_rate_s32/ 100;
 				if( dela->_b_played ) _moo_group_smps[ dela->_group ] += a;
-				         dela->_bufs[ ch ][ dela->_offset ] = _moo_group_smps[ dela->_group ];
+				        dela->_bufs[ ch ][ dela->_offset ] = _moo_group_smps[ dela->_group ];
 			}
 		}
 		for( s32 o = 0; o < _ovdrv_num; o++ )
@@ -355,8 +355,7 @@ static b32 _PXTONE_SAMPLE( void *p_data )
 			if( _ovdrvs[ o ]->_b_played )
 			{
 				work = _moo_group_smps[ _ovdrvs[ o ]->_group ];
-				if(      work >  _ovdrvs[ o ]->_cut_16bit_top ) work =  _ovdrvs[ o ]->_cut_16bit_top;
-				else if( work < -_ovdrvs[ o ]->_cut_16bit_top ) work = -_ovdrvs[ o ]->_cut_16bit_top;
+				pxMem_cap( &work, _ovdrvs[ o ]->_cut_16bit_top, -_ovdrvs[ o ]->_cut_16bit_top );
 				_moo_group_smps[ _ovdrvs[ o ]->_group ] = (s32)( (f32)work * _ovdrvs[ o ]->_amp );
 			}
 		}

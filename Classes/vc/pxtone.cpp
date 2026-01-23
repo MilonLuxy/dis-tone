@@ -202,6 +202,47 @@ void DLLAPI pxtn_GetQuality( int *p_channel_num, int *p_sps, int *p_bps, int *p_
 	}
 }
 
+#pragma comment(lib,"version")
+
+int DLLAPI pxtn_GetVersion( int *p1, int *p2, int *p3, int *p4 )
+{
+	LPVOID            p = NULL;
+	DWORD             dummy;
+	DWORD             size ;
+	VS_FIXEDFILEINFO *info ;
+	UINT              vSize;
+	char              path[ MAX_PATH ];
+
+	bool              b_ret = false;
+
+	if( p1 ) *p1 = 0;
+	if( p2 ) *p2 = 0;
+	if( p3 ) *p3 = 0;
+	if( p4 ) *p4 = 0;
+
+	GetModuleFileName( NULL, path, MAX_PATH );
+
+	size = GetFileVersionInfoSize( path, &dummy );
+	if( !size ) goto End;
+
+	p = malloc( size );
+	if( !p                                                ) goto End;
+	if( !GetFileVersionInfo( path, 0, size, p )           ) goto End;
+	if( !VerQueryValue( p, "\\", (LPVOID*)&info, &vSize ) ) goto End;
+
+	if( p1 ) *p1 = HIWORD(info->dwFileVersionMS);
+	if( p2 ) *p2 = LOWORD(info->dwFileVersionMS);
+	if( p3 ) *p3 = HIWORD(info->dwFileVersionLS);
+	if( p4 ) *p4 = LOWORD(info->dwFileVersionLS);
+
+	b_ret = true;
+End:
+	if( p ) free( p );
+
+	if( b_ret && p1 && p2 && p3 && p4 ) return (*p1 * 1000) + (*p2 * 100) + (*p3 * 10) + *p4;
+	return -1;
+}
+
 bool DLLAPI pxtn_Release( void )
 {
 	pxtnEvelist_Release  ();
@@ -453,6 +494,7 @@ End:
 	const char        DLLAPI *pxtone_Tune_GetLastError      ( void )                                                                                                           { return pxtn_GetLastError            ();                                                                                  }
 //	void              DLLAPI  pxtone_GetQuality             ( int  *p_channel_num, int  *p_sps, int  *p_bps, int  *p_sample_per_buf )                                          {        pxtn_GetQuality              ( p_channel_num, p_sps, p_bps, p_sample_per_buf );                                   }
 	void              DLLAPI  pxtone_GetQuality             ( long *p_channel_num, long *p_sps, long *p_bps, long *p_sample_per_buf )                                          {        pxtn_GetQuality              ( (int*)p_channel_num, (int*)p_sps, (int*)p_bps, (int*)p_sample_per_buf );           }
+	long              DLLAPI  pxtone_GetVersion             ( void )                                                                                                           { int v[4] = {};return pxtn_GetVersion( &v[ 0 ], &v[ 1 ], &v[ 2 ], &v[ 3 ] );                                              }
 	BOOL              DLLAPI  pxtone_Release                ( void )                                                                                                           { return pxtn_Release                 ();                                                                                  }
 	BOOL              DLLAPI  pxtone_Tune_Load              ( HMODULE hModule, const char *type_name, const char *file_name )                                                  { return pxtn_Tune_Load               ( hModule, type_name, file_name );                                                   }
 //	bool              DLLAPI  pxtone_Tune_Read              ( void *p, int  size )                                                                                             { return pxtn_Tune_Read               ( p, size );                                                                         }

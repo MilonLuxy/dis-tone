@@ -38,7 +38,7 @@ END
 
 3 TEXTINCLUDE 
 BEGIN
-    "../pxtone/pxStdDef.h\r\n"
+    "\r\n"
     "\0"
 END
 

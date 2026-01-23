@@ -1,10 +1,9 @@
 ﻿#include "pxStdDef.h"
 #include "../Fixture/DataDevice.h"
+#include "pxtnStrain.h"
 #include "pxtnOverDrive.h"
 #include "pxtnUnit.h"
 #include "pxtnWoice.h"
-
-u16 pxtnIO_GetCompileVersion( void );
 
 // Write..
 b32 pxtnIO_assiUNIT_Write  ( FILE *fp, TUNEUNITTONESTRUCT *p_u    , s32 idx   );
@@ -21,8 +20,9 @@ b32 pxtnIO_textNAME_Write  ( FILE *fp                                         );
 b32 pxtnIO_Event_V5_Write  ( FILE *fp                             , s32 rough );
 b32 pxtnIO_MasterV5_Write  ( FILE *fp                             , s32 rough );
 b32 pxtnIO_Master_x4x_Write( FILE *fp                             , s32 rough );
-
 b32 pxtnIO_PTI_Write       ( const char *path_pti,     s32 beat_divide        );
+b32 pxtnIO_effeSTRA_Write   ( FILE *fp, STRAIN_STRUCT     *p_strn             );
+b32 pxtnIO_effeSTRANew_Write( FILE *fp, STRAIN_STRUCT     *p_strn             );
 
 // Read..
 b32 pxtnIO_assiUNIT_Read           ( DDV *p_read,                                   b32 *pbNew );
@@ -47,3 +47,5 @@ s32 pxtnIO_Master_v5_EventNum_Read ( DDV *p_read                                
 b32 pxtnIO_Master_x4x_Read         ( DDV *p_read,                                   b32 *pbNew );
 s32 pxtnIO_Master_x4x_EventNum_Read( DDV *p_read                                               );
 b32 pxtnIO_x1x_Project_Read        ( DDV *p_read                                               );
+b32 pxtnIO_effeSTRA_Read           ( DDV *p_read                                               );
+b32 pxtnIO_effeSTRANew_Read        ( DDV *p_read,                                   b32 *pbNew );

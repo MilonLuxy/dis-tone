@@ -132,6 +132,9 @@
     <ClInclude Include="..\Classes\PT4i\pxSound.h">
       <Filter>Classes\PT4i</Filter>
     </ClInclude>
+    <ClInclude Include="..\Classes\pxtone\pxtnStrain.h">
+      <Filter>Classes\pxtone</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Classes\StdAfx\StdAfx.cpp">
@@ -235,6 +238,9 @@
     </ClCompile>
     <ClCompile Include="..\Classes\PT4i\pxSound.cpp">
       <Filter>Classes\PT4i</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\pxtone\pxtnStrain.cpp">
+      <Filter>Classes\pxtone</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

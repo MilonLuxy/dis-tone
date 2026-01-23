@@ -18,6 +18,7 @@
 #include "pxtnUnit.h"
 #include "pxtnWoice.h"
 #include "pxtnService.h"
+#include "../vc/pxtone.h"
 
 
 #define _VERSIONSIZE                16
@@ -61,6 +62,7 @@ static const char *_code_matePTN      = "matePTN ";
 static const char *_code_mateOGGV     = "mateOGGV";
 static const char *_code_effeDELA     = "effeDELA"; // å¯â èÓïÒ
 static const char *_code_effeOVER     = "effeOVER";
+static const char *_code_effeSTRA     = "effeSTRA";
 static const char *_code_textNAME     = "textNAME"; // ñºëO
 static const char *_code_textCOMM     = "textCOMM"; // ÉRÉÅÉìÉg
 static const char *_code_assiUNIT     = "assiUNIT";
@@ -90,6 +92,7 @@ enum enum_TagCode
 	enum_TagCode_mateOGGV    ,
 	enum_TagCode_effeDELA    ,
 	enum_TagCode_effeOVER    ,
+	enum_TagCode_effeSTRA    ,
 	enum_TagCode_textNAME    ,
 	enum_TagCode_textCOMM    ,
 	enum_TagCode_assiUNIT    ,
@@ -134,6 +137,7 @@ static enum_TagCode _CheckTagCode( const char *p_code )
 	else if( !memcmp( p_code, _code_mateOGGV    , _CODESIZE ) ) return enum_TagCode_mateOGGV;
 	else if( !memcmp( p_code, _code_effeDELA    , _CODESIZE ) ) return enum_TagCode_effeDELA;
 	else if( !memcmp( p_code, _code_effeOVER    , _CODESIZE ) ) return enum_TagCode_effeOVER;
+	else if( !memcmp( p_code, _code_effeSTRA    , _CODESIZE ) ) return enum_TagCode_effeSTRA;
 	else if( !memcmp( p_code, _code_textNAME    , _CODESIZE ) ) return enum_TagCode_textNAME;
 	else if( !memcmp( p_code, _code_textCOMM    , _CODESIZE ) ) return enum_TagCode_textCOMM;
 	else if( !memcmp( p_code, _code_assiUNIT    , _CODESIZE ) ) return enum_TagCode_assiUNIT;
@@ -205,22 +209,23 @@ static b32 _ReadTuneItems( DDV *p_read )
 #endif
 			break;
 
-		case enum_TagCode_effeDELA    : if( !pxtnIO_effeDELA_Read( p_read, &pbNew ) ){ pxtnError_Set( "read delay."         ); goto term; } break;
-		case enum_TagCode_effeOVER    : if( !pxtnIO_effeOVER_Read( p_read, &pbNew ) ){ pxtnError_Set( "read overdrive."     ); goto term; } break;
-		case enum_TagCode_textNAME    : if( !pxtnIO_textNAME_Read( p_read         ) ){ pxtnError_Set( "read name."          ); goto term; } break;
-		case enum_TagCode_textCOMM    : if( !pxtnIO_textCOMM_Read( p_read         ) ){ pxtnError_Set( "read comment."       ); goto term; } break;
-		case enum_TagCode_assiWOIC    : if( !pxtnIO_assiWOIC_Read( p_read, &pbNew ) ){ pxtnError_Set( "read assist(voice)." ); goto term; } break;
-		case enum_TagCode_assiUNIT    : if( !pxtnIO_assiUNIT_Read( p_read, &pbNew ) ){ pxtnError_Set( "read assist(unit)."  ); goto term; } break;
+		case enum_TagCode_effeDELA    : if( !pxtnIO_effeDELA_Read   ( p_read,                &pbNew ) ){ pxtnError_Set( "read delay."         ); goto term; } break;
+		case enum_TagCode_effeSTRA    : if( !pxtnIO_effeSTRA_Read   ( p_read                        ) ){ pxtnError_Set( "read overdrive(old)."); goto term; } break;
+		case enum_TagCode_effeOVER    : if( !pxtnIO_effeOVER_Read   ( p_read,                &pbNew ) ){ pxtnError_Set( "read overdrive."     ); goto term; } break;
+		case enum_TagCode_textNAME    : if( !pxtnIO_textNAME_Read   ( p_read                        ) ){ pxtnError_Set( "read name."          ); goto term; } break;
+		case enum_TagCode_textCOMM    : if( !pxtnIO_textCOMM_Read   ( p_read                        ) ){ pxtnError_Set( "read comment."       ); goto term; } break;
+		case enum_TagCode_assiWOIC    : if( !pxtnIO_assiWOIC_Read   ( p_read,                &pbNew ) ){ pxtnError_Set( "read assist(voice)." ); goto term; } break;
+		case enum_TagCode_assiUNIT    : if( !pxtnIO_assiUNIT_Read   ( p_read,                &pbNew ) ){ pxtnError_Set( "read assist(unit)."  ); goto term; } break;
 		case enum_TagCode_pxtoneND    : b_end = _true; break;
 
 		// old -------
-		case enum_TagCode_x4x_evenMAST: if( !pxtnIO_Master_x4x_Read ( p_read, &pbNew                ) ){ pxtnError_Set( "read master."       ); goto term; } break;
-		case enum_TagCode_x4x_evenUNIT: if( !pxtnIO_Event_x4x_Read  ( p_read, _false, _true, &pbNew ) ){ pxtnError_Set( "read event."        ); goto term; } break;
-		case enum_TagCode_x3x_pxtnUNIT: if( !pxtnIO_Unit_Read       ( p_read, &pbNew                ) ){ pxtnError_Set( "read unit."         ); goto term; } break;
-		case enum_TagCode_x1x_PROJ    : if( !pxtnIO_x1x_Project_Read( p_read                        ) ){ pxtnError_Set( "read project(old)." ); goto term; } break;
-		case enum_TagCode_x1x_UNIT    : if( !pxtnIO_UnitOld_Read    ( p_read                        ) ){ pxtnError_Set( "read unit(old)."    ); goto term; } break;
-		case enum_TagCode_x1x_PCM     : if( !pxtnIO_matePCM_Read    ( p_read, &pbNew                ) ){ pxtnError_Set( "read pcm(old)."     ); goto term; } break;
-		case enum_TagCode_x1x_EVEN    : if( !pxtnIO_Event_x4x_Read  ( p_read, _true, _false, &pbNew ) ){ pxtnError_Set( "read event(old)."   ); goto term; } break;
+		case enum_TagCode_x4x_evenMAST: if( !pxtnIO_Master_x4x_Read ( p_read, &pbNew                ) ){ pxtnError_Set( "read master."        ); goto term; } break;
+		case enum_TagCode_x4x_evenUNIT: if( !pxtnIO_Event_x4x_Read  ( p_read, _false, _true, &pbNew ) ){ pxtnError_Set( "read event."         ); goto term; } break;
+		case enum_TagCode_x3x_pxtnUNIT: if( !pxtnIO_Unit_Read       ( p_read, &pbNew                ) ){ pxtnError_Set( "read unit."          ); goto term; } break;
+		case enum_TagCode_x1x_PROJ    : if( !pxtnIO_x1x_Project_Read( p_read                        ) ){ pxtnError_Set( "read project(old)."  ); goto term; } break;
+		case enum_TagCode_x1x_UNIT    : if( !pxtnIO_UnitOld_Read    ( p_read                        ) ){ pxtnError_Set( "read unit(old)."     ); goto term; } break;
+		case enum_TagCode_x1x_PCM     : if( !pxtnIO_matePCM_Read    ( p_read, &pbNew                ) ){ pxtnError_Set( "read pcm(old)."      ); goto term; } break;
+		case enum_TagCode_x1x_EVEN    : if( !pxtnIO_Event_x4x_Read  ( p_read, _true, _false, &pbNew ) ){ pxtnError_Set( "read event(old)."    ); goto term; } break;
 		case enum_TagCode_x1x_END     : b_end = _true; break;
 
 		default: pxtnError_Set( "unknown [%s]", code ); goto term;
@@ -308,7 +313,7 @@ b32 pxtnService_Write( const char *path, b32 b_tune )
 	b32   b_ret   = _false;
 	FILE *fp      = NULL ;
 	s32   rough   = b_tune ? 10 : 1;
-	u16   exe_ver = pxtnIO_GetCompileVersion();
+	u16   exe_ver = pxtone_GetVersion();
 	s32   dummy   =     0;
 
 
@@ -462,6 +467,7 @@ s32 pxtnService_Pre_Count_Event( DDV *p_read, s32 p_count )
 		case enum_TagCode_mateOGGV    :
 		case enum_TagCode_effeDELA    :
 		case enum_TagCode_effeOVER    :
+		case enum_TagCode_effeSTRA    :
 		case enum_TagCode_textNAME    :
 		case enum_TagCode_textCOMM    :
 		case enum_TagCode_assiUNIT    :

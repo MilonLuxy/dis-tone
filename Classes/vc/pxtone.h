@@ -47,6 +47,9 @@ const char DLLAPI *pxtn_GetLastError( void );
 // pxtone の音質を取得します
 void DLLAPI pxtn_GetQuality( int *p_channel_num, int *p_sps, int *p_bps, int *p_sample_per_buf ); // pxtone
 
+// リソースバージョンを取得
+int DLLAPI pxtn_GetVersion( int *p1, int *p2, int *p3, int *p4 );
+
 // pxtone を開放します
 bool DLLAPI pxtn_Release( void );
 
@@ -155,6 +158,7 @@ typedef BOOL (* PXTONEPLAY_CALLBACK)( long clock, BOOL bEnd );
 	const char        DLLAPI *pxtone_Tune_GetLastError      ( void );
 //	void              DLLAPI  pxtone_GetQuality             ( int  *p_channel_num, int  *p_sps, int  *p_bps, int  *p_sample_per_buf );
 	void              DLLAPI  pxtone_GetQuality             ( long *p_channel_num, long *p_sps, long *p_bps, long *p_sample_per_buf );
+	long              DLLAPI  pxtone_GetVersion             ( void );
 	BOOL              DLLAPI  pxtone_Release                ( void );
 	BOOL              DLLAPI  pxtone_Tune_Load              ( HMODULE hModule, const char *type_name, const char *file_name );
 //	bool              DLLAPI  pxtone_Tune_Read              ( void *p, int  size );
