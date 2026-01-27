@@ -107,3 +107,10 @@ b32 pxtnUnit_AddNew( void )
 	_unit_main[ i ]->_bPlayed = _true;
 	return _true;
 }
+
+b32 pxtnUnit_Set_Played( s32 index, b32 b )
+{
+	if( index < 0 || !_unit_main[ index ] ) return _false;
+	_unit_main[ index ]->_bPlayed = b;
+	return _true;
+}

@@ -409,6 +409,11 @@ bool DLLAPI pxtn_Tune_Vomit( void *p, int sample_num )
 	return pxtnServiceMoo_Proc( p, sample_num * _main_ch_num * _main_bps/8 );
 }
 
+bool DLLAPI pxtn_Tune_MuteUnit( int unit, bool bMute )
+{
+	return pxtnUnit_Set_Played( unit, !bMute );
+}
+
 void DLLAPI pxtn_Noise_Initialize( void )
 {
 	pxtnFrequency_Initialize();
@@ -520,6 +525,7 @@ End:
 	const char        DLLAPI *pxtone_Tune_GetComment        ( void )                                                                                                           { return pxtn_Tune_GetComment         ();                                                                                  }
 //	bool              DLLAPI  pxtone_Tune_Vomit             ( void *p, int  sample_num )                                                                                       { return pxtn_Tune_Vomit              ( p, sample_num );                                                                   }
 	BOOL              DLLAPI  pxtone_Tune_Vomit             ( void *p, long sample_num )                                                                                       { return pxtn_Tune_Vomit              ( p, sample_num );                                                                   }
+	BOOL              DLLAPI  pxtone_Tune_MuteUnit          ( long unit, BOOL bMute )                                                                                          { return pxtn_Tune_MuteUnit           ( unit, bMute );                                                                     }
 	void              DLLAPI  pxtone_Noise_Initialize       ( void )                                                                                                           {        pxtn_Noise_Initialize        ();                                                                                  }
 	void              DLLAPI  pxtone_Noise_Release          ( PXTONENOISEBUFFER *p_noise )                                                                                     {        pxtn_Noise_Release           ( p_noise );                                                                         }
 //	PXTONENOISEBUFFER DLLAPI *pxtone_Noise_Create           ( const char *name        , const char *type   , int  channel_num, int  sps, int  bps )                            { return pxtn_Noise_Create            ( name        , type           , channel_num, sps, bps );                            }

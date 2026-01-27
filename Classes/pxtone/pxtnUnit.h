@@ -36,3 +36,4 @@ s32  pxtnUnit_Count     ( void );
 s32  pxtnUnit_Get_NumMax( void );
 TUNEUNITTONESTRUCT *pxtnUnit_GetVariable( s32 index );
 b32  pxtnUnit_AddNew    ( void );
+b32  pxtnUnit_Set_Played( s32 index, b32 b );

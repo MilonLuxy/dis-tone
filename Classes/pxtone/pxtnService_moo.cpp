@@ -28,7 +28,6 @@ static s32 _unit_num, _delay_num, _ovdrv_num, _group_num;
 static s32 _dst_ch_num, _dst_sps, _dst_byte_per_smp;
 
 static b32 _moo_b_init          = _false;
-static b32 _moo_b_mute_by_unit  = _false;
 static b32 _moo_b_loop          = _true ;
 
 static const f32 *_moo_freqtable = NULL;
@@ -285,11 +284,11 @@ static b32 _PXTONE_SAMPLE( void *p_data )
 		p_u = _units[ u ];
 		if( p_w = p_u->_p_woice )
 		{
-//			if( _moo_b_mute_by_unit && !p_u->_bPlayed )
-//			{
-//				for( s32 ch = 0; ch < _dst_ch_num; ch++ ) p_u->_pan_time_bufs[ ch ][ _moo_time_pan_index ] = 0;
-//				continue;
-//			}
+			if( !p_u->_bPlayed )
+			{
+				for( s32 ch = 0; ch < _dst_ch_num; ch++ ) p_u->_pan_time_bufs[ ch ][ _moo_time_pan_index ] = 0;
+				continue;
+			}
 
 			for( s32 ch = 0; ch < _dst_ch_num; ch++ )
 			{
@@ -365,7 +364,7 @@ static b32 _PXTONE_SAMPLE( void *p_data )
 		for( s32 g = 0; g < _group_num; g++ ) work += _moo_group_smps[ g ];
 
 		// fade..
-		if( _moo_fade_fade && _moo_fade_max ) work = work * ( _moo_fade_count >> 8 ) / _moo_fade_max;
+		if( _moo_fade_fade ) work = work * ( _moo_fade_count >> 8 ) / _moo_fade_max;
 
 		// master volume
 		work = (s32)( (f32)work * _moo_master_vol );
@@ -492,11 +491,10 @@ b32  pxtnServiceMoo_Is_Finished( void ) // bEnd
 	if( _moo_smp_count < _moo_smp_end ) return _false;
 	return _true;
 }
-b32  pxtnServiceMoo_Is_Prepared    ( void  ){ return ( _units && _delays && _moo_group_smps ); }
-s32  pxtnServiceMoo_Get_NowClock   ( void  ){ return (_moo_clock_rate) ? (s32)( _moo_smp_count / _moo_clock_rate ) : 0; }
-s32  pxtnServiceMoo_Get_EndClock   ( void  ){ return (_moo_clock_rate) ? (s32)( _moo_smp_end   / _moo_clock_rate ) : 0; }
-void pxtnServiceMoo_SetMute_By_Unit( b32 b ){ _moo_b_mute_by_unit = b; }
-void pxtnServiceMoo_SetLoop        ( b32 b ){ _moo_b_loop         = b; }
+b32  pxtnServiceMoo_Is_Prepared ( void  ){ return ( _units && _delays && _moo_group_smps ); }
+s32  pxtnServiceMoo_Get_NowClock( void  ){ return ( _moo_clock_rate ) ? (s32)( _moo_smp_count / _moo_clock_rate ) : 0; }
+s32  pxtnServiceMoo_Get_EndClock( void  ){ return ( _moo_clock_rate ) ? (s32)( _moo_smp_end   / _moo_clock_rate ) : 0; }
+void pxtnServiceMoo_SetLoop     ( b32 b ){ _moo_b_loop = b; }
 
 b32  pxtnServiceMoo_SetFade( s32 fade, s32 msec )
 {
@@ -504,8 +502,8 @@ b32  pxtnServiceMoo_SetFade( s32 fade, s32 msec )
 	switch( fade )
 	{
 		case -1: _moo_fade_fade = -1; _moo_fade_count = _moo_fade_max << 8; break; // out
-		case  0: _moo_fade_fade =  1; _moo_fade_count =  0;                 break; // in
-		case  1: _moo_fade_fade =  0;                                       break; // off
+		case  0: _moo_fade_fade =  0;                                       break; // in
+		case  1: _moo_fade_fade =  1; _moo_fade_count =  0;                 break; // off
 		default: return _false;
 	}
 	return _true;
