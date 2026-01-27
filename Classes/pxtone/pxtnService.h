@@ -15,6 +15,13 @@ typedef struct
 }
 pxtnVOMITPREPARATION;
 
+static enum FADEMODE
+{
+	_FADE_OUT = -1,
+	_FADE_OFF =  0,
+	_FADE_IN  =  1,
+};
+
 
 void pxtnService_Clear          ( void );
 b32  pxtnService_Write          ( const char *path, b32 b_tune  );

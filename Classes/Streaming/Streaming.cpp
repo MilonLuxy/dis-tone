@@ -175,7 +175,7 @@ void Streaming_Tune_Fadeout( int msec )
 #ifdef pxINCLUDE_PT4i
 		if( _b_pti ) PT4i_SetFade(  msec );
 #endif
-		pxtnServiceMoo_SetFade( -1, msec );
+		pxtnServiceMoo_SetFade( _FADE_OUT, msec );
 	}
 }
 BOOL Streaming_Is( void ){ return ( _proc_state == _PROC_PLAYING || _proc_state == _PROC_PAUSED ); }

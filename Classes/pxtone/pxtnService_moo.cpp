@@ -459,13 +459,13 @@ static b32 _PXTONE_SAMPLE( void *p_data )
 	}
 
 	// fade out
-	if( _moo_fade_fade < 0 )
+	if( _moo_fade_fade == _FADE_OUT )
 	{
 		if( _moo_fade_count > 0 ) _moo_fade_count--;
 		else return _false;
 	}
 	// fade in
-	else if( _moo_fade_fade > 0 )
+	else if( _moo_fade_fade == _FADE_IN )
 	{
 		if( _moo_fade_count < (_moo_fade_max << 8) ) _moo_fade_count++; // × 256
 		else                                         _moo_fade_fade = 0;
@@ -487,7 +487,7 @@ static b32 _PXTONE_SAMPLE( void *p_data )
 
 b32  pxtnServiceMoo_Is_Finished( void ) // bEnd
 {
-	if( _moo_fade_fade == -1 && _moo_fade_count == 0 ) return _true;
+	if( _moo_fade_fade == _FADE_OUT && _moo_fade_count == 0 ) return _true;
 	if( _moo_smp_count < _moo_smp_end ) return _false;
 	return _true;
 }
@@ -501,11 +501,12 @@ b32  pxtnServiceMoo_SetFade( s32 fade, s32 msec )
 	_moo_fade_max = ( _dst_sps * msec ) / 1000 >> 8; // ÷ 256
 	switch( fade )
 	{
-		case -1: _moo_fade_fade = -1; _moo_fade_count = _moo_fade_max << 8; break; // out
-		case  0: _moo_fade_fade =  0;                                       break; // in
-		case  1: _moo_fade_fade =  1; _moo_fade_count =  0;                 break; // off
+		case _FADE_OUT: _moo_fade_count = _moo_fade_max << 8; break; // out
+		case _FADE_OFF:                                       break; // off
+		case _FADE_IN : _moo_fade_count =  0;                 break; // in
 		default: return _false;
 	}
+	_moo_fade_fade = fade;
 	return _true;
 }
 
@@ -549,8 +550,8 @@ b32 pxtnServiceMoo_Preparation( const pxtnVOMITPREPARATION *p_prep )
 	_moo_smp_smooth = _dst_sps / 250; // (0.004sec) // (0.010sec)
 	_moo_top = (_dst_byte_per_smp == 8) ? MAX_S8BIT : MAX_S16BIT;
 
-	if( p_prep->fadein_sec > 0 ) pxtnServiceMoo_SetFade( 1, p_prep->fadein_sec );
-	else                         pxtnServiceMoo_SetFade( 0,                  0 );
+	if( p_prep->fadein_sec > 0 ) pxtnServiceMoo_SetFade( _FADE_IN , p_prep->fadein_sec );
+	else                         pxtnServiceMoo_SetFade( _FADE_OFF,                  0 );
 	
 	if( !pxMem_zero_alloc( (void**)&_units         , sizeof(s32) * _unit_num  ) ) goto End;
 	if( !pxMem_zero_alloc( (void**)&_ovdrvs        , sizeof(s32) * _ovdrv_num ) ) goto End;
