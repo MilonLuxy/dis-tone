@@ -13,8 +13,8 @@ void  Streaming_GetQuality    ( s32 *p_ch_num, s32 *p_sps, s32 *p_bps, s32 *p_sm
 void  Streaming_Set_SampleInfo( s32    ch_num, s32    sps, s32    bps                 );
 void  Streaming_Get_SampleInfo( s32 *p_ch_num, s32 *p_sps, s32 *p_bps                 );
 
-BOOL  DxSound_Proc            ( void *arg );
-BOOL  pxMME_Proc              ( void *arg );
+BOOL  pxmAL_Proc              ( void *arg );
+BOOL  pxwXAudio2_Proc         ( void *arg );
 
 void Test_Callback_Init( void );
 BOOL Test_Callback( long clock, BOOL bEnd );

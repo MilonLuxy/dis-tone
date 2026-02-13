@@ -7,8 +7,8 @@
 #include "../PT4i/PT4i.h"
 #include "../PT4i/pxSound.h"
 #include "../vc/pxtone.h"
-#include "DxSound.h"
-#include "pxMME.h"
+#include "pxmAL.h"
+#include "pxwXAudio2.h"
 #include "ActiveTone.h"
 #include "Streaming.h"
 
@@ -56,7 +56,7 @@ static void _ProcStop   ( void ){ _proc_state = _PROC_STOPPED; }
 // ƒOƒ[ƒoƒ‹ŠÖ” //////////
 ////////////////////////////
 
-void *Streaming_GetDirectSound( void ){ return DxSound_GetDirectSoundPointer(); }
+void *Streaming_GetDirectSound( void ){ return NULL; }
 
 BOOL Streaming_Release( void )
 {
@@ -68,10 +68,10 @@ BOOL Streaming_Release( void )
 	_b_init = FALSE;
 
 	dlog( "streaming release(2)" );
-	DxSound_Release();
+	pxmAL_Release();
 
 	dlog( "streaming release(3)" );
-	if( !pxMME_Release() ){ MessageBox( NULL, "release WAVEMAPPER", "fatal", MB_OK ); return FALSE; }
+	if( !pxwXAudio2_Release() ){ MessageBox( NULL, "release XAudio2", "fatal", MB_OK ); return FALSE; }
 
 	dlog( "streaming release(4)" );
 	DeleteCriticalSection( &_cs_proc );
@@ -97,23 +97,23 @@ BOOL Streaming_Initialize( DWORD *strm_cfg, long size )
 
 	if( _strm_current.bDirectSound )
 	{
-		if( !DxSound_Initialize(
-				_strm_current.hWnd,
-				_strm_current.channel_num,
-				_strm_current.sps,
-				_strm_current.bps,
-				_strm_current.smp_per_buf
-				           ) ) goto End;
-	}
-	else
-	{
-		if( !pxMME_Initialize  (
+		if( !pxmAL_Initialize(
 				_strm_current.hWnd,
 				_strm_current.channel_num,
 				_strm_current.sps,
 				_strm_current.bps,
 				_strm_current.smp_per_buf,
-				pxMME_Proc ) ) goto End;
+				pxmAL_Proc ) ) goto End;
+	}
+	else
+	{
+		if( !pxwXAudio2_Initialize(
+				_strm_current.hWnd,
+				_strm_current.channel_num,
+				_strm_current.sps,
+				_strm_current.bps,
+				_strm_current.smp_per_buf,
+				pxwXAudio2_Proc ) ) goto End;
 	}
 
 #ifdef pxINCLUDE_PT4i
@@ -234,90 +234,31 @@ void _PTI_Proc( void )
 }
 #endif
 
-// Direct Sound
-BOOL DxSound_Proc( void *arg )
+// Open AL
+BOOL pxmAL_Proc( void *arg )
 {
-	DWORD index;
-	DS_STREAMING_THREAD *hThread = (DS_STREAMING_THREAD*)arg;
+	LPSTR p_smp;
+	DWORD p_size = _strm_current.smp_per_buf * _strm_current.channel_num * _strm_current.bps / 8;
+	if( !(p_smp  = (LPSTR)malloc( p_size )) ) return FALSE;
+	UINT buf;
 
-	while( (index = WaitForMultipleObjects( hThread->count, hThread->events, FALSE, INFINITE )) < DS_BUFFER_COUNT - 1 )
+	while( pxmAL_IsActive() )
 	{
 
 #ifdef pxINCLUDE_PT4i
-		if( _b_pti ){ _PTI_Proc(); if( !pxSound_IsActive() ) break; }
+			if( _b_pti ){ _PTI_Proc(); if( !pxSound_IsActive() ) break; }
 #endif
 
-		DWORD  buf_index = (index + 1) % (DS_BUFFER_COUNT - 1);
-		DWORD  dwbuf1, dwbuf2;
-		LPVOID lpbuf1, lpbuf2;
-		if( _CS_Lock() )
+		DWORD processed = pxmAL_GetProcessed() + 1;
+		while( processed-- > 1 )
 		{
-			if( DxSound_Lock( buf_index, &lpbuf1, &dwbuf1, &lpbuf2, &dwbuf2 ) )
-			{
-				if( !pxtnServiceMoo_Is_Prepared() || !Streaming_Is() )
-				{
-					_SilenceFill( lpbuf1, dwbuf1 );
-					_SilenceFill( lpbuf2, dwbuf2 );
-				}
-				else
-				{
-					if( !pxtnServiceMoo_Proc( lpbuf1, dwbuf1 ) ) Streaming_Tune_Stop();
-					if( !pxtnServiceMoo_Proc( lpbuf2, dwbuf2 ) ) Streaming_Tune_Stop();
-				}
+			pxmAL_Unregist( &buf );
 
-				ActiveTone_Voice_Sampling( lpbuf1, dwbuf1 );
-				ActiveTone_Voice_Sampling( lpbuf2, dwbuf2 );
-
-				DxSound_Unlock( lpbuf1, dwbuf1, lpbuf2, dwbuf2 );
-			}
-			_CS_Unlock();
-		}
-
-		if( _strm_current.callback && !_b_pti )
-		{
-			long clock = pxtnServiceMoo_Get_NowClock();
-			_strm_current.callback_old = (PXTONEPLAY_CALLBACK)_strm_current.callback;
-			_strm_current.callback_old( clock, pxtnServiceMoo_Is_Finished() );
-		}
-	}
-	ExitThread( 0 );
-
-	return TRUE;
-}
-
-// Wave Mapper
-BOOL pxMME_Proc( void *arg )
-{
-	MSG msg;
-	while( GetMessage( &msg, NULL, 0, 0 ) )
-	{
-
-#ifdef pxINCLUDE_PT4i
-		if( _b_pti ){ _PTI_Proc(); if( !pxSound_IsActive() ) break; }
-#endif
-
-		if( msg.message != MM_WOM_CLOSE && msg.message == MM_WOM_DONE )
-		{
-			WAVEHDR *waveHdr = (WAVEHDR*)msg.lParam;
 			if( _CS_Lock() )
 			{
-				if( waveHdr->dwFlags & WHDR_PREPARED && !( waveHdr->dwFlags & WHDR_INQUEUE ) )
-				{
-					pxMME_Header_Clean( waveHdr );
-
-					if( !pxtnServiceMoo_Is_Prepared() || !Streaming_Is() )
-					{
-						_SilenceFill( waveHdr->lpData, waveHdr->dwBufferLength );
-					}
-					else
-					{
-						if( !pxtnServiceMoo_Proc( waveHdr->lpData, waveHdr->dwBufferLength ) ) Streaming_Tune_Stop();
-					}
-
-					ActiveTone_Voice_Sampling( waveHdr->lpData, waveHdr->dwBufferLength );
-
-					pxMME_Header_Play( waveHdr );
-				}
+				if(      !pxtnServiceMoo_Is_Prepared() || !Streaming_Is() ) _SilenceFill( p_smp, p_size );
+				else if( !pxtnServiceMoo_Proc( p_smp, p_size )            )  Streaming_Tune_Stop();
+				pxmAL_Regist( &buf, p_smp, p_size );
 				_CS_Unlock();
 			}
 
@@ -328,7 +269,60 @@ BOOL pxMME_Proc( void *arg )
 				_strm_current.callback_old( clock, pxtnServiceMoo_Is_Finished() );
 			}
 		}
+		Sleep( 2 );
 	}
+	if( p_smp ) free( p_smp );
+
+	return TRUE;
+}
+
+// XAudio2
+static void Convert8To16( const BYTE *src_data, short *dst_data, DWORD p_size )
+{
+	for( DWORD i = 0; i < p_size; i++ ) dst_data[ i ] = ((short)src_data[ i ] - 128) << 8;
+}
+BOOL pxwXAudio2_Proc( void *arg )
+{
+	DWORD buf_idx = 0;
+	BYTE *p_smp8  = NULL;
+	if( !pxwXAudio2_8bitAllocate( &p_smp8 ) ) return FALSE;
+
+	while( pxwXAudio2_IsActive() )
+	{
+
+#ifdef pxINCLUDE_PT4i
+		if( _b_pti ){ _PTI_Proc(); if( !pxSound_IsActive() ) break; }
+#endif
+
+		DWORD queued  = pxwXAudio2_GetState();
+		while( queued < XA_BUFFER_COUNT )
+		{
+			BYTE *p_smp16; DWORD buf_size;
+			pxwXAudio2_GetBufs( &p_smp16, &buf_size, buf_idx );
+
+			if( _CS_Lock() )
+			{
+				if( !pxtnServiceMoo_Is_Prepared() || !Streaming_Is() ) _SilenceFill( p_smp16, buf_size );
+				else if(  _strm_current.bps == 16 && !pxtnServiceMoo_Proc( p_smp16, buf_size  ) ) Streaming_Tune_Stop();
+				else if(  _strm_current.bps ==  8 && !pxtnServiceMoo_Proc( p_smp8 , buf_size/2) ) Streaming_Tune_Stop();
+
+				if( _strm_current.bps == 8 ) Convert8To16( p_smp8, (short*)p_smp16, buf_size/2 );
+				pxwXAudio2_SubmitAudio( p_smp16, buf_size );
+				buf_idx = (buf_idx + 1) % XA_BUFFER_COUNT;
+				_CS_Unlock();
+			}
+			queued++;
+
+			if( _strm_current.callback && !_b_pti )
+			{
+				long clock = pxtnServiceMoo_Get_NowClock();
+				_strm_current.callback_old = (PXTONEPLAY_CALLBACK)_strm_current.callback;
+				_strm_current.callback_old( clock, pxtnServiceMoo_Is_Finished() );
+			}
+		}
+		Sleep( 2 );
+	}
+	if( p_smp8 ) free( p_smp8 );
 
 	return TRUE;
 }
