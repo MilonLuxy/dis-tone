@@ -51,7 +51,12 @@ void pxtnStrain_Set_Values( s32 idx, s32 group, s32 *gates, f64 amp )
 	_strn_main[ idx ]._group = group;
 	_strn_main[ idx ]._amp   = amp  ;
 
-	for( s32 g = 0; g < GATE_NUM; g++ ){ _strn_main[ idx ]._gates[ g ] = (f64)gates[ g ]; }
+	for( s32 g = 0; g < GATE_NUM; g++ )
+	{
+		f32 temp = 0;
+		memcpy( &temp, &gates[ g ], sizeof(temp) );
+		_strn_main[ idx ]._gates[ g ] = temp;
+	}
 }
 
 b32 pxtnStrain_Add( s32 group, s32 *gates, f64 amp )
@@ -64,15 +69,33 @@ b32 pxtnStrain_Add( s32 group, s32 *gates, f64 amp )
 	if( group >= max_group ){ group = max_group - 1; }
 
 	_strn_main[ index ]._b_played = _true;
-	_strn_main[ index ]._group    = group;
-	_strn_main[ index ]._amp      = amp  ;
-
-	for( s32 g = 0; g < GATE_NUM; g++ ){ _strn_main[ index ]._gates[ g ] = (f64)gates[ g ]; }
+	pxtnStrain_Set_Values( index, group, gates, amp );
 
 	return _true;
 }
 
 void pxtnStrain_RemoveAll( void ){ if( _strn_main ){ for( s32 s = 0; s < _strn_num; s++ ) _Remove( &_strn_main[ s ] ); } }
+
+s32 pxtnStrain_Count( void )
+{
+	s32 count = 0;
+	for( s32 i = 0; i < _strn_num; i++ ){ if( _strn_main[ i ]._b_played ) count++; }
+	return count;
+}
+
+void pxtnStrain_ReadyTone( void )
+{
+	for( s32 i = 0; i < _strn_num; i++ )
+	{
+		if( _strn_main[ i ]._b_played )
+		{
+			for( s32 g = 0; g < GATE_NUM; g++ )
+			{
+				_strn_main[ i ]._cut_16bit[ g ] = (s32)( MAX_S16BIT * ( 100 - _strn_main[ i ]._gates[ g ] ) / 100 );
+			}
+		}
+	}
+}
 
 b32  pxtnStrain_IsValid( s32 index )
 {
@@ -89,9 +112,11 @@ void pxtnStrain_Tone_Supple( s32 index, s32 *group_smps )
 {
 	if( pxtnStrain_IsValid( index ) )
 	{
-		group_smps[ _strn_main[ index ]._group ] *= _strn_main[ index ]._amp;
-		pxMem_cap( &group_smps[ _strn_main[ index ]._group ], MAX_S16BIT, -MAX_S16BIT );
-		group_smps[ _strn_main[ index ]._group ] /= _strn_main[ index ]._amp;
+		s32 work = group_smps[ _strn_main[ index ]._group ];
+		pxMem_cap( &work,
+					 _strn_main[ index ]._cut_16bit[ 0 ],   // Gate+
+					-_strn_main[ index ]._cut_16bit[ 1 ] ); // Gate-
+		group_smps[ _strn_main[ index ]._group ] = (s32)( (f32)work * _strn_main[ index ]._amp );
 	}
 }
 
