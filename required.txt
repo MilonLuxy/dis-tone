@@ -1,3 +1,0 @@
-al.h
-alc.h
-OpenAL32.dll (optional)
