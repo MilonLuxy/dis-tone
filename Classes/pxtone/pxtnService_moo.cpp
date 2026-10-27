@@ -14,6 +14,16 @@
 #include "pxtnWoice.h"
 #include "pxtnService.h"
 
+static enum RESAMPLING_LIST
+{
+	NO_INTERPOLATION = 0, // default for PxTone
+	LINEAR           = 1,
+	CUBIC            = 2,
+	GAUSSIAN         = 3,
+	SINC             = 4,
+
+	RES_num
+};
 
 #define _BASE_SPS              44100
 #define _DEF_TPAN                 64
@@ -44,6 +54,7 @@ static s32 _moo_fade_count     =     0;
 static s32 _moo_fade_max       =     0;
 static s32 _moo_fade_fade      =     0;
 static f32 _moo_master_vol     =  1.0f;
+static s32 _moo_interpolation  =     0; // NO_INTERPOLATION
 
 static s32 _moo_top            =     0;
 static f32 _moo_smp_stride     =     0;
@@ -55,6 +66,7 @@ static f32 _moo_bt_tempo       =     0;
 static s32 _moo_bt_clock       =     0;
 
 static const EVERECORD *_moo_p_eve = NULL;
+
 
 
 ////////////////////////////////////////////////
@@ -123,6 +135,8 @@ static void _moo_InitUnitTone( void )
 ////////////////////////////////////////////////
 // Render proc   ///////////////////////////////
 ////////////////////////////////////////////////
+
+s32 pxtnSample_interpolate( s32 ch, f64 smp_pos, const ptvINSTANCE *p_vi, s8 inter, b32 b_loop );
 
 static void _moo_LoopSample( void )
 {
@@ -303,13 +317,14 @@ static b32 _PXTONE_SAMPLE( void *p_data )
 
 					if( p_vt->life_count > 0 )
 					{
-						s32 pos =    (s32 )( p_vt->smp_pos ) * 4 + ch * 2;
-						work   += *( (s16*)&p_vi->p_smp_w[ pos ] );
+						// resamples output for smooth audio
+						b32 b_loop = ( p_w->_voices[ v ].voice_flags & PTV_VOICEFLAG_WAVELOOP );
+						work += pxtnSample_interpolate( ch, p_vt->smp_pos, p_vi, _moo_interpolation, b_loop );
 
 						if( _dst_ch_num == 1 )
 						{
-							work += *( (s16*)&p_vi->p_smp_w[ pos + 2 ] );
-							work  = work / 2;
+							work += pxtnSample_interpolate( ch ^ 1, p_vt->smp_pos, p_vi, _moo_interpolation, b_loop );
+							work /= 2;
 						}
 
 						work = ( work * p_u->_v_VELOCITY )   >> 7; // ÷ 128
@@ -597,6 +612,13 @@ void pxtnServiceMoo_Release( void )
 s32  pxtnServiceMoo_Get_SamplingOffset( void ){ return _moo_smp_count; }
 
 void pxtnServiceMoo_Set_Master_Volume( f32 v ){ pxMem_cap( &v, 1, 0 ); _moo_master_vol = v; }
+
+b32 pxtnServiceMoo_Set_Resampling( s32 mode )
+{
+	if( mode >= RES_num ) return _false;
+	_moo_interpolation = mode;
+	return _true;
+}
 
 
 

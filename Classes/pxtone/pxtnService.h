@@ -40,4 +40,5 @@ b32  pxtnServiceMoo_Preparation       ( const pxtnVOMITPREPARATION *p_prep );
 void pxtnServiceMoo_Release           ( void  );
 s32  pxtnServiceMoo_Get_SamplingOffset( void  );
 void pxtnServiceMoo_Set_Master_Volume ( f32 v );
+b32  pxtnServiceMoo_Set_Resampling    ( s32 mode );
 b32  pxtnServiceMoo_Proc              ( void *p_buf, s32 size );

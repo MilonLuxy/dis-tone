@@ -243,6 +243,16 @@ End:
 	return -1;
 }
 
+bool DLLAPI pxtn_Set_Resampling( int mode )
+{
+	if( !pxtnServiceMoo_Set_Resampling( mode ) )
+	{
+		_SetError( "error: invalid interpolation" );
+		return false;
+	}
+	return true;
+}
+
 bool DLLAPI pxtn_Release( void )
 {
 	pxtnEvelist_Release  ();
@@ -497,6 +507,7 @@ End:
 	const char        DLLAPI *pxtone_Tune_GetLastError      ( void )                                                                                                           { return pxtn_GetLastError            ();                                                                                  }
 	void              DLLAPI  pxtone_GetQuality             ( long *p_channel_num, long *p_sps, long *p_bps, long *p_sample_per_buf )                                          {        pxtn_GetQuality              ( (int*)p_channel_num, (int*)p_sps, (int*)p_bps, (int*)p_sample_per_buf );           }
 	long              DLLAPI  pxtone_GetVersion             ( void )                                                                                                           { int  v[ 4 ];  return pxtn_GetVersion( &v[ 0 ], &v[ 1 ], &v[ 2 ], &v[ 3 ] );                                              }
+	BOOL			  DLLAPI  pxtone_Set_Resampling         ( long mode )                                                                                                      { return pxtn_Set_Resampling          ( mode );                                                                            }
 	BOOL              DLLAPI  pxtone_Release                ( void )                                                                                                           { return pxtn_Release                 ();                                                                                  }
 	BOOL              DLLAPI  pxtone_Tune_Load              ( HMODULE hModule, const char *type_name, const char *file_name )                                                  { return pxtn_Tune_Load               ( hModule, type_name, file_name );                                                   }
 	BOOL              DLLAPI  pxtone_Tune_Read              ( void *p, long size )                                                                                             { return pxtn_Tune_Read               ( p, size );                                                                         }

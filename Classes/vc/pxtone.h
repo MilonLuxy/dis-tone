@@ -66,6 +66,17 @@ int DLLAPI pxtn_GetVersion( int *p1, int *p2, int *p3, int *p4 );
 // @returns pxtone の開放 ( true / false )
 bool DLLAPI pxtn_Release( void );
 
+// @brief 再生バッファの再サンプリング補間を変更します
+// @brief ・ 利用可能なモード ・
+// @brief 0 = 補間なし (pxtone のデフォルト)
+// @brief 1 = 線形補間
+// @brief 2 = 3次補間
+// @brief 3 = ガウス補間
+// @brief 4 = Sinc補間
+// @param inter_type: 補間モード
+// @returns 成功した場合は TRUE、それ以外は FALSE
+bool DLLAPI pxtn_Set_Resampling( int mode );
+
 // @brief 曲を読み込みます (ファイル・リソースから)
 // @param[in] hModule:　リソースから読む場合はモジュールハンドルを指定します。NULL でも問題ないかも。
 // @param[in] type_name: リソースから読む場合はリソースの種類名。外部ファイルを読む場合は NULL。
@@ -242,6 +253,17 @@ void DLLAPI pxtone_GetQuality( long *p_channel_num, long *p_sps, long *p_bps, lo
 // @brief Gets the version number of the DLL.
 // @returns Version number, or '-1' if something go wrong
 long DLLAPI pxtone_GetVersion( void );
+
+// @brief Changes the resampling interpolation for sound playback buffer
+// @brief - Available modes -
+// @brief 0 = No_Interpolation (default for PxTone)
+// @brief 1 = Linear
+// @brief 2 = Cubic
+// @brief 3 = Gaussian
+// @brief 4 = Sinc
+// @param inter_type: Interpolation mode
+// @returns If succeeded, TRUE; If an invalid mode is entered, FALSE
+BOOL DLLAPI pxtone_Set_Resampling( long mode );
 
 // @brief Releases pxtone.
 // @returns Release proccess ( true / false )
