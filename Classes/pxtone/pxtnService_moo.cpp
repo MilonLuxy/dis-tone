@@ -28,6 +28,7 @@ static enum RESAMPLING_LIST
 #define _BASE_SPS              44100
 #define _DEF_TPAN                 64
 #define _TPAN_ROUGH               63
+#define _FRAME_ROUGH           60.0f
 
 static TUNEUNITTONESTRUCT **_units ;
 static DELAYSTRUCT        **_delays;
@@ -55,6 +56,8 @@ static s32 _moo_fade_max       =     0;
 static s32 _moo_fade_fade      =     0;
 static f32 _moo_master_vol     =  1.0f;
 static s32 _moo_interpolation  =     0; // NO_INTERPOLATION
+static b32 _moo_speedlock      =     0; // set in case speed is set before playing
+static f32 _moo_pitch          =     1; // for pitch change
 
 static s32 _moo_top            =     0;
 static f32 _moo_smp_stride     =     0;
@@ -89,7 +92,7 @@ static void _moo_ResetVoiceOn( TUNEUNITTONESTRUCT *p_u, s32 w )
 		f32 ofs_freq = 0;
 		if( p_vc->voice_flags & PTV_VOICEFLAG_BEATFIT )
 		{
-			ofs_freq = ( p_inst->smp_body_w * _moo_bt_tempo ) / ( _BASE_SPS * 60 * p_vc->tuning );
+			ofs_freq = ( p_inst->smp_body_w * _moo_bt_tempo ) / ( _BASE_SPS * _FRAME_ROUGH * p_vc->tuning );
 		}
 		else
 		{
@@ -443,7 +446,7 @@ static b32 _PXTONE_SAMPLE( void *p_data )
 					{
 						p_vt->on_count--;
 
-						p_vt->smp_pos += p_vt->offset_freq * p_u->_v_TUNING * freq;
+						p_vt->smp_pos += p_vt->offset_freq * p_u->_v_TUNING * freq * _moo_pitch;
 
 						if( p_vt->smp_pos >= p_vi->smp_body_w )
 						{
@@ -551,7 +554,7 @@ b32 pxtnServiceMoo_Preparation( const pxtnVOMITPREPARATION *p_prep )
 	_moo_bt_clock       = pxtnMaster_Get_BeatClock();
 	_moo_bt_num         = pxtnMaster_Get_BeatNum  ();
 	_moo_bt_tempo       = pxtnMaster_Get_BeatTempo();
-	_moo_clock_rate     = (f32)( 60.0f * (f64)_dst_sps / ( (f64)_moo_bt_tempo * (f64)_moo_bt_clock ) );
+	if( !_moo_speedlock ) _moo_clock_rate = (f32)( _FRAME_ROUGH * (f64)_dst_sps / ( (f64)_moo_bt_tempo * (f64)_moo_bt_clock ) );
 	_moo_smp_stride     = ( 44100.0f / _dst_sps );
 	_moo_time_pan_index = 0;
 	_moo_smp_start      = (s32)( (f64)p_prep->start_pos_meas * (f64)_moo_bt_num * (f64)_moo_bt_clock * _moo_clock_rate );
@@ -619,6 +622,34 @@ b32 pxtnServiceMoo_Set_Resampling( s32 mode )
 	_moo_interpolation = mode;
 	return _true;
 }
+
+b32 pxtnServiceMoo_Set_Speed( f32 v )
+{
+	if( v <= 0 ) return _false;
+
+	// Recalculates rate for the new speed
+	s32 num; f32 tempo; s32 clock; s32 sps;
+	pxtnMaster_Get( &num, &tempo, &clock );
+	Streaming_Get_SampleInfo( NULL, &sps, NULL );
+	_moo_clock_rate = (f32)( _FRAME_ROUGH * (f64)sps / ( ((f64)tempo * v) * (f64)clock ) );
+
+	// Updates playback length to the new speed
+	_moo_smp_end    = (s32)( (f64)pxtnMaster_Get_PlayMeas  () * (f64)num * (f64)clock * _moo_clock_rate );
+	_moo_smp_repeat = (s32)( (f64)pxtnMaster_Get_RepeatMeas() * (f64)num * (f64)clock * _moo_clock_rate );
+
+	// Locks rewriting clock rate if speed is set before starting the song
+	_moo_speedlock  = _true;
+	return _true;
+}
+b32 pxtnServiceMoo_Set_Pitch( f32 v )
+{
+	if( v <= 0 || isnan(v) || isinf(v) ) return _false;
+	_moo_pitch = v;
+	return _true;
+}
+
+void pxtnServiceMoo_ResetSpeed( void ){ _moo_speedlock = _false; }
+void pxtnServiceMoo_ResetPitch( void ){ _moo_pitch = 1; }
 
 
 

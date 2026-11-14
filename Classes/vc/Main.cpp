@@ -50,7 +50,7 @@ int WINAPI WinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmd, int nCmd 
 	pxtone_Noise_Release( p_noise );
 
 	if( !pxtone_Tune_Load( NULL, NULL, path_tune ) ){ MessageBox( NULL, pxtone_GetLastError(), "err", 0x30 ); return 1; }
-
+	
 	if( !pxtone_Tune_Start( 0, 0 ) ){ MessageBox( NULL, "start", "err", 0x30 ); return 1; }
 	Test_Callback_Init();
 

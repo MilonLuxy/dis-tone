@@ -51,7 +51,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,9,1,5
+// FILEVERSION 0,9,1,5 // from DLL
+ FILEVERSION 1,0,2,0
  PRODUCTVERSION 0,0,0,0
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
@@ -68,11 +69,11 @@ BEGIN
         BLOCK "041104b0"
         BEGIN
             VALUE "CompanyName", "Studio Pixel"
-            VALUE "FileDescription", "dis-tone"
-            VALUE "FileVersion", "0, 9, 1, 5"
+//            VALUE "FileVersion", "0, 9, 1, 5" // from DLL
+            VALUE "FileVersion", "1, 0, 2, 0"
             VALUE "LegalCopyright", "(C) Studio Pixel"
             VALUE "OriginalFilename", "pxtoneDLL"
-            VALUE "ProductName", "pxtone"
+            VALUE "ProductName", "dis-tone"
             VALUE "ProductVersion", "0, 0, 0, 0"
         END
     END

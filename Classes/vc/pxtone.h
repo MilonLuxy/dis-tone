@@ -110,6 +110,16 @@ int DLLAPI pxtn_Tune_Fadeout( int msec );
 // @param[in] v: ボリュームを設定する。
 void DLLAPI pxtn_Tune_SetVolume( float v );
 
+// @brief 現在再生の速度を設定します。2.0 が二倍速くで、0.5 が二倍遅いです。
+// @param[in] speed: 再生のスピード (曲のBPMに乗算されます)
+// @returns 入力された値が有効な場合は TRUE それ以外は FALSE
+bool DLLAPI pxtn_Tune_SetSpeed( float speed );
+
+// @brief 曲の周波数を変更します。
+// @param[in] pitch: 変更対象の周波数 (全てのユニットから)
+// @returns ピッチの変更 ( true / false )
+bool DLLAPI pxtn_Tune_SetPitch( float pitch );
+
 // @brief 曲を停止して現在再生サンプルを取得
 // @returns 停止時の曲の位置を取得します。
 int DLLAPI pxtn_Tune_Stop( void );
@@ -160,8 +170,8 @@ const char DLLAPI *pxtn_Tune_GetComment( void );
 bool DLLAPI pxtn_Tune_Vomit( void *p, int sample_num );
 
 // @brief ユニットの消音を適用する
-// @param[out] unit:　　 対象のユニット
-// @param[out] bMute:　消音する / 消音しない
+// @param[in] unit:　　 対象のユニット
+// @param[in] bMute:　消音する / 消音しない
 // @returns 消音の適用 ( true / false )
 bool DLLAPI pxtn_Tune_MuteUnit( int unit, bool bMute );
 
@@ -301,6 +311,16 @@ long DLLAPI pxtone_Tune_Fadeout( long msec );
 // @brief Sets the song volume. 1.0 is max volume and 0.5 is half.
 // @param v: Desired value
 void DLLAPI pxtone_Tune_SetVolume( float v );
+
+// @brief Sets the current song playback speed. 2.0 plays x2 faster and 0.5 plays x2 slower.
+// @param speed: Playback speed (multiplies with the song BPM)
+// @returns If the entered value is valid, TRUE; otherwise, FALSE
+BOOL DLLAPI pxtone_Tune_SetSpeed( float speed );
+
+// @brief Changes the frequency of the current song.
+// @param pitch: Frequency to be altered
+// @returns Pitch change operation ( true / false )
+BOOL DLLAPI pxtone_Tune_SetPitch( float pitch );
 
 // @brief Stops the song, and gets the current playback position.
 // @returns Playback position when stopped

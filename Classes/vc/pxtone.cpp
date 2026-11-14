@@ -92,6 +92,8 @@ static bool _Tune_Read( DDV *p_read, const char *name )
 	if( !pxtnWoice_ReadyTone    (              ) ){ _SetError( "error: woice-work" ); return false; }
 	if( !pxtnDelay_ReadyTone    (              ) ){ _SetError( "error: delay-work" ); return false; }
 		 pxtnOverDrive_ReadyTone(              );
+		 pxtnServiceMoo_ResetSpeed();
+		 pxtnServiceMoo_ResetPitch();
 
 	return true;
 }
@@ -157,6 +159,8 @@ bool DLLAPI pxtn_Reset( HWND hWnd, int channel_num, int sps, int bps, float buff
 	if( !pxtnWoice_ReadyTone() ){ _SetError( "error: woice-work" ); goto End; }
 	if( !pxtnDelay_ReadyTone() ){ _SetError( "error: delay-work" ); goto End; }
 	pxtnOverDrive_ReadyTone ();
+	pxtnServiceMoo_ResetSpeed();
+	pxtnServiceMoo_ResetPitch();
 
 	if( _b_strm_active && !Streaming_Release() ){ _SetError( "error: release streaming" ); goto End; }
 
@@ -352,6 +356,16 @@ void DLLAPI pxtn_Tune_SetVolume( float v )
 	pxtnServiceMoo_Set_Master_Volume( v );
 }
 
+bool DLLAPI pxtn_Tune_SetSpeed( float speed )
+{
+	return pxtnServiceMoo_Set_Speed( speed );
+}
+
+bool DLLAPI pxtn_Tune_SetUnitPitch( float pitch )
+{
+	return pxtnServiceMoo_Set_Pitch( pitch );
+}
+
 int DLLAPI pxtn_Tune_Stop( void )
 {
 	if( _b_strm_active ) Streaming_Tune_Stop();
@@ -517,6 +531,8 @@ End:
 	BOOL              DLLAPI  pxtone_Tune_Play              ( long start_sample, long fade_msec                 )                                                              { return pxtn_Tune_Start              ( start_sample, fade_msec  , -1     );                                               }
 	long              DLLAPI  pxtone_Tune_Fadeout           ( long msec )                                                                                                      { return pxtn_Tune_Fadeout            ( msec );                                                                            }
 	void              DLLAPI  pxtone_Tune_SetVolume         ( float v )                                                                                                        {        pxtn_Tune_SetVolume          ( (float)v );                                                                        }
+	BOOL              DLLAPI  pxtone_Tune_SetSpeed          ( float speed )                                                                                                    { return pxtn_Tune_SetSpeed           ( speed );                                                                           }
+	BOOL              DLLAPI  pxtone_Tune_SetPitch          ( float pitch )                                                                                                    { return pxtn_Tune_SetUnitPitch       ( pitch );                                                                           }
 	long              DLLAPI  pxtone_Tune_Stop              ( void )                                                                                                           { return pxtn_Tune_Stop               ();                                                                                  }
 	BOOL              DLLAPI  pxtone_Tune_IsStreaming       ( void )                                                                                                           { return pxtn_Tune_IsStreaming        ();                                                                                  }
 	BOOL              DLLAPI  pxtone_Tune_IsPlaying         ( void )                                                                                                           { return pxtn_Tune_IsStreaming        ();                                                                                  }
